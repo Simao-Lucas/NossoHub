@@ -2,12 +2,12 @@
     <form wire:submit="add" class="mb-10 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
         <div>
             <label class="nh-label" for="calendar-email">E-mail do Google</label>
-            <input id="calendar-email" wire:model="email" type="email" class="nh-input" placeholder="voce@gmail.com">
+            <input id="calendar-email" wire:model="email" type="email" class="nh-input">
             @error('email') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
         <div>
             <label class="nh-label" for="calendar-label">Nome (opcional)</label>
-            <input id="calendar-label" wire:model="label" type="text" class="nh-input" placeholder="Lucas, Amor...">
+            <input id="calendar-label" wire:model="label" type="text" class="nh-input">
         </div>
         <button type="submit" class="nh-btn-primary">Adicionar</button>
     </form>

@@ -1,19 +1,19 @@
 <div class="nh-card p-6 sm:p-8">
     <form wire:submit="save" class="grid gap-5 sm:grid-cols-2">
         <div class="sm:col-span-2">
-            <label class="nh-label">Título (summary)</label>
+            <label class="nh-label">Título</label>
             <input wire:model="summary" type="text" class="nh-input">
             @error('summary') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
 
         <div class="sm:col-span-2">
-            <label class="nh-label">Descrição</label>
+            <label class="nh-label">Descrição (opcional)</label>
             <textarea wire:model="description" rows="4" class="nh-input"></textarea>
             @error('description') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
 
         <div class="sm:col-span-2">
-            <label class="nh-label">Local (location)</label>
+            <label class="nh-label">Local (opcional)</label>
             <input wire:model="location" type="text" class="nh-input">
             @error('location') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
@@ -26,7 +26,7 @@
         </div>
 
         <div>
-            <label class="nh-label">Início (start)</label>
+            <label class="nh-label">Início</label>
             <input
                 wire:model="starts_at"
                 type="{{ $all_day ? 'date' : 'datetime-local' }}"
@@ -36,7 +36,7 @@
         </div>
 
         <div>
-            <label class="nh-label">Término (end)</label>
+            <label class="nh-label">Término</label>
             <input
                 wire:model="ends_at"
                 type="{{ $all_day ? 'date' : 'datetime-local' }}"
@@ -46,8 +46,8 @@
         </div>
 
         <div>
-            <label class="nh-label">Fuso (timeZone)</label>
-            <input wire:model="timezone" type="text" class="nh-input" placeholder="America/Sao_Paulo">
+            <label class="nh-label">Fuso horário</label>
+            <input wire:model="timezone" type="text" class="nh-input">
             @error('timezone') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
 
@@ -78,7 +78,7 @@
             </select>
         </div>
 
-        <div class="sm:col-span-2 flex flex-wrap gap-2 pt-2">
+        <div class="sm:col-span-2 flex flex-wrap justify-center gap-2 pt-2 sm:justify-start">
             <button type="submit" class="nh-btn-primary">Salvar compromisso</button>
             <a
                 href="{{ $appointmentId ? route('calendar.show', $appointmentId) : route('calendar.index') }}"

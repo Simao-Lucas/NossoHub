@@ -53,7 +53,14 @@ DB_ROOT_PASSWORD=rootsecret
 
 `DB_HOST` deve ser **`mariadb`** (nome do serviço), nunca `localhost` dentro do container PHP.
 
-## Portas
+## Redes
+
+- `nosso_hub_net` — rede interna do app (nginx ↔ php ↔ mariadb)
+- `homelab` — rede externa do homelab (PHP acessa o Immich). Precisa existir antes:
+
+```bash
+docker network create homelab   # se ainda não existir
+```
 
 | Serviço  | Porta no host |
 |----------|---------------|

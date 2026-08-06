@@ -4,7 +4,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_HOME=/tmp/compose
 
-# Dependências de sistema (camada isolada — facilita ver falha de rede/apt)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         git \
@@ -16,8 +15,6 @@ RUN apt-get update \
         libxml2-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Extensões mínimas para Laravel (sem gd/redis — build mais leve e estável)
-# -j1 evita OOM em homelabs com pouca RAM
 RUN docker-php-ext-install -j1 \
         pdo_mysql \
         mbstring \
@@ -26,7 +23,11 @@ RUN docker-php-ext-install -j1 \
         intl \
         opcache
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/compose
+# Instala Composer via installer oficial (evita bug de path truncado no COPY)
+RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php \
+    && php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && rm /tmp/composer-setup.php \
+    && composer --version
 
 COPY php.ini /usr/local/etc/php/conf.d/99-nosso-hub.ini
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh

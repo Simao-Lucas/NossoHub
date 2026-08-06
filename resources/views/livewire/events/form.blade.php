@@ -1,43 +1,37 @@
 <div class="nh-card p-6 sm:p-8">
-    <form wire:submit="save" class="grid gap-5 sm:grid-cols-2">
-        <div class="sm:col-span-2">
+    <form wire:submit="save" class="grid gap-5">
+        <div>
             <label class="nh-label">Título</label>
             <input wire:model="title" type="text" class="nh-input">
             @error('title') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
 
-        <div class="sm:col-span-2">
+        <div>
             <label class="nh-label">Descrição (opcional)</label>
-            <textarea wire:model="description" rows="5" class="nh-input"></textarea>
+            <textarea wire:model="description" rows="4" class="nh-input"></textarea>
             @error('description') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
 
-        <div class="sm:col-span-2 sm:max-w-xs">
+        <div class="max-w-xs">
             <label class="nh-label">Data</label>
             <input wire:model="occurred_at" type="date" class="nh-input">
             @error('occurred_at') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
 
-        <div class="sm:col-span-2 rounded-3xl border border-white/8 bg-black/15 p-4 sm:p-5">
-            <h3 class="font-display text-lg">Fotos e vídeos</h3>
-            <p class="mt-1 text-sm text-[var(--color-muted)]">
-                Envie arquivos direto pelo formulário. Eles ficam salvos no Laravel.
-            </p>
-
-            <div class="mt-4">
-                <input
-                    wire:model="uploads"
-                    type="file"
-                    multiple
-                    accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm"
-                    class="block w-full text-sm text-[var(--color-muted)] file:mr-4 file:rounded-2xl file:border-0 file:bg-[var(--brand-yellow)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--brand-purple-deep)] hover:file:bg-[var(--brand-yellow-soft)]"
-                >
-                <div wire:loading wire:target="uploads" class="mt-2 text-xs text-[var(--brand-yellow-soft)]">
-                    Enviando arquivos...
-                </div>
-                @error('uploads.*') <p class="mt-2 text-xs text-rose-300">{{ $message }}</p> @enderror
-                @error('uploads') <p class="mt-2 text-xs text-rose-300">{{ $message }}</p> @enderror
+        <div>
+            <label class="nh-label">Fotos e vídeos</label>
+            <input
+                wire:model="uploads"
+                type="file"
+                multiple
+                accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm"
+                class="mt-1 block w-full text-sm text-[var(--color-muted)] file:mr-4 file:rounded-2xl file:border-0 file:bg-[var(--brand-yellow)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--brand-purple-deep)] hover:file:bg-[var(--brand-yellow-soft)]"
+            >
+            <div wire:loading wire:target="uploads" class="mt-2 text-xs text-[var(--brand-yellow-soft)]">
+                Enviando arquivos...
             </div>
+            @error('uploads.*') <p class="mt-2 text-xs text-rose-300">{{ $message }}</p> @enderror
+            @error('uploads') <p class="mt-2 text-xs text-rose-300">{{ $message }}</p> @enderror
 
             @if (count($uploads))
                 <ul class="mt-4 space-y-2">
@@ -53,7 +47,7 @@
             @endif
 
             @if (count($existingMedia))
-                <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                     @foreach ($existingMedia as $item)
                         <div class="relative overflow-hidden rounded-2xl border border-white/8 bg-black/30">
                             @if ($item['type'] === 'video')
@@ -75,9 +69,14 @@
             @endif
         </div>
 
-        <div class="sm:col-span-2 flex flex-wrap gap-2 pt-2">
+        <div class="flex flex-wrap justify-center gap-2 pt-2 sm:justify-start">
             <button type="submit" class="nh-btn-primary" wire:loading.attr="disabled">Salvar evento</button>
-            <a href="{{ route('events.index') }}" class="nh-btn-ghost">Cancelar</a>
+            <a
+                href="{{ $eventId ? route('events.show', $eventId) : route('timeline') }}"
+                class="nh-btn-ghost"
+            >
+                Cancelar
+            </a>
         </div>
     </form>
 </div>

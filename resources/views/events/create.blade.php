@@ -2,11 +2,23 @@
 
 @section('title', 'Novo evento')
 
-@section('content')
-    <div class="mb-8">
-        <h1 class="font-display text-4xl font-semibold">Novo evento</h1>
-        <p class="mt-2 text-[var(--color-muted)]">Título, data e fotos ou vídeos do momento.</p>
-    </div>
+@section('hide_navbar', true)
 
-    <livewire:events.event-form />
+@section('content')
+    <div class="mx-auto flex min-h-[80vh] w-full max-w-3xl flex-col items-center py-6">
+        <div class="animate-fade-up w-full text-center">
+            <h1 class="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+                Novo evento
+            </h1>
+        </div>
+
+        <div class="animate-fade-up mt-10 w-full" style="animation-delay: 120ms">
+            <livewire:events.event-form />
+        </div>
+
+        <div class="animate-fade-up mt-12 flex flex-wrap items-center justify-center gap-3" style="animation-delay: 240ms">
+            <a href="{{ route('timeline') }}" class="nh-btn-ghost">Linha do Tempo</a>
+            <a href="{{ route('home') }}" class="nh-btn-primary">Início</a>
+        </div>
+    </div>
 @endsection

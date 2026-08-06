@@ -8,15 +8,18 @@ use Illuminate\Support\Facades\DB;
 
 class EventRepository
 {
-    public function allChronological(): Collection
+    public function allChronological(bool $ascending = false): Collection
     {
         return Event::query()
             ->withCount([
                 'media as photos_count' => fn ($q) => $q->where('type', 'photo'),
                 'media as videos_count' => fn ($q) => $q->where('type', 'video'),
             ])
-            ->orderByDesc('occurred_at')
-            ->orderByDesc('id')
+            ->when(
+                $ascending,
+                fn ($q) => $q->orderBy('occurred_at')->orderBy('id'),
+                fn ($q) => $q->orderByDesc('occurred_at')->orderByDesc('id'),
+            )
             ->get();
     }
 

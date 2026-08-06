@@ -16,9 +16,9 @@ class EventService
         private readonly ImmichService $immich,
     ) {}
 
-    public function timeline(): Collection
+    public function timeline(bool $ascending = false): Collection
     {
-        return $this->events->allChronological();
+        return $this->events->allChronological($ascending);
     }
 
     public function find(int $id): Event
@@ -29,7 +29,7 @@ class EventService
     /**
      * @param  array{
      *     title: string,
-     *     description: string,
+     *     description?: string|null,
      *     occurred_at: string,
      *     location?: string|null,
      *     cover_immich_asset_id?: string|null,
@@ -52,7 +52,7 @@ class EventService
     /**
      * @param  array{
      *     title: string,
-     *     description: string,
+     *     description?: string|null,
      *     occurred_at: string,
      *     location?: string|null,
      *     cover_immich_asset_id?: string|null,
@@ -83,13 +83,12 @@ class EventService
     /**
      * Enrich event media with Immich metadata and thumbnail URLs.
      *
-     * @return array{event: Event, photos: list<array<string, mixed>>, videos: list<array<string, mixed>>, cover_url: string|null}
+     * @return array{event: Event, photos: list<array<string, mixed>>, videos: list<array<string, mixed>>}
      */
     public function present(Event $event): array
     {
         $photos = [];
         $videos = [];
-        $coverUrl = null;
 
         foreach ($event->media as $media) {
             $asset = $this->immich->getAssetById($media->immich_asset_id);
@@ -109,15 +108,10 @@ class EventService
             }
         }
 
-        if ($event->cover_immich_asset_id) {
-            $coverUrl = $this->immich->appThumbnailUrl($event->cover_immich_asset_id, 'preview');
-        }
-
         return [
             'event' => $event,
             'photos' => $photos,
             'videos' => $videos,
-            'cover_url' => $coverUrl,
         ];
     }
 

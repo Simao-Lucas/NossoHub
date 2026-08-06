@@ -22,16 +22,12 @@
         </div>
     </div>
 
-    @if ($cover_url)
-        <div class="mb-8 overflow-hidden rounded-[2rem] border border-white/8">
-            <img src="{{ $cover_url }}" alt="{{ $event->title }}" class="max-h-[420px] w-full object-cover">
-        </div>
+    @if (filled($event->description))
+        <section class="nh-card mb-8 p-6 sm:p-8">
+            <h2 class="font-display text-2xl">Sobre este momento</h2>
+            <p class="mt-4 whitespace-pre-line text-[var(--color-muted)] leading-relaxed">{{ $event->description }}</p>
+        </section>
     @endif
-
-    <section class="nh-card mb-8 p-6 sm:p-8">
-        <h2 class="font-display text-2xl">Sobre este momento</h2>
-        <p class="mt-4 whitespace-pre-line text-[var(--color-muted)] leading-relaxed">{{ $event->description }}</p>
-    </section>
 
     <section class="nh-card mb-8 p-6 sm:p-8">
         <h2 class="font-display text-2xl">Localização</h2>

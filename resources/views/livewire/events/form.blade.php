@@ -2,13 +2,13 @@
     <form wire:submit="save" class="grid gap-5 sm:grid-cols-2">
         <div class="sm:col-span-2">
             <label class="nh-label">Título</label>
-            <input wire:model="title" type="text" class="nh-input" placeholder="Nosso primeiro jantar">
+            <input wire:model="title" type="text" class="nh-input">
             @error('title') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
 
         <div class="sm:col-span-2">
-            <label class="nh-label">Descrição</label>
-            <textarea wire:model="description" rows="5" class="nh-input" placeholder="Conte a história deste momento..."></textarea>
+            <label class="nh-label">Descrição (opcional)</label>
+            <textarea wire:model="description" rows="5" class="nh-input"></textarea>
             @error('description') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
 
@@ -20,12 +20,7 @@
 
         <div>
             <label class="nh-label">Local (opcional)</label>
-            <input wire:model="location" type="text" class="nh-input" placeholder="São Paulo, SP">
-        </div>
-
-        <div class="sm:col-span-2">
-            <label class="nh-label">Capa (Immich Asset ID)</label>
-            <input wire:model="cover_immich_asset_id" type="text" class="nh-input" placeholder="UUID do asset Immich">
+            <input wire:model="location" type="text" class="nh-input">
         </div>
 
         <div class="sm:col-span-2 rounded-3xl border border-white/8 bg-black/15 p-4 sm:p-5">
@@ -50,16 +45,8 @@
                             <div class="min-w-0">
                                 <span class="font-medium">{{ $item['type'] === 'video' ? 'Vídeo' : 'Foto' }}</span>
                                 <span class="ml-2 break-all text-[var(--color-muted)]">{{ $item['immich_asset_id'] }}</span>
-                                @if ($cover_immich_asset_id === $item['immich_asset_id'])
-                                    <x-badge tone="yellow" class="ml-2">Capa</x-badge>
-                                @endif
                             </div>
-                            <div class="flex gap-2">
-                                @if ($cover_immich_asset_id !== $item['immich_asset_id'])
-                                    <button type="button" wire:click="setCover('{{ $item['immich_asset_id'] }}')" class="nh-btn-ghost !px-3 !py-1.5 text-xs">Usar capa</button>
-                                @endif
-                                <button type="button" wire:click="removeMedia({{ $index }})" class="nh-btn-ghost !px-3 !py-1.5 text-xs text-rose-300">Remover</button>
-                            </div>
+                            <button type="button" wire:click="removeMedia({{ $index }})" class="nh-btn-ghost !px-3 !py-1.5 text-xs text-rose-300">Remover</button>
                         </li>
                     @endforeach
                 </ul>

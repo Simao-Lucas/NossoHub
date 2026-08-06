@@ -43,6 +43,10 @@ class Event extends Model
 
     public function shortDescription(int $limit = 140): string
     {
+        if (! filled($this->description)) {
+            return '';
+        }
+
         return str($this->description)->limit($limit)->toString();
     }
 }

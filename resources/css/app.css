@@ -95,6 +95,24 @@
     .animate-fade-up {
         animation: nh-fade-up 0.7s ease-out both;
     }
+
+    .nh-timeline-scroll {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
+        scrollbar-color: color-mix(in srgb, var(--brand-yellow) 45%, transparent) transparent;
+    }
+
+    .nh-timeline-scroll::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .nh-timeline-scroll::-webkit-scrollbar-thumb {
+        background: color-mix(in srgb, var(--brand-yellow) 45%, transparent);
+        border-radius: 999px;
+    }
 }
 
 @keyframes nh-fade-up {

@@ -18,7 +18,7 @@ class StoreEventRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
             'occurred_at' => ['required', 'date'],
             'location' => ['nullable', 'string', 'max:255'],
             'cover_immich_asset_id' => ['nullable', 'string', 'max:64'],

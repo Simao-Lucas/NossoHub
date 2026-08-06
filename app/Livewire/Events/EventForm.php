@@ -19,8 +19,6 @@ class EventForm extends Component
 
     public string $location = '';
 
-    public string $cover_immich_asset_id = '';
-
     /** @var list<array{immich_asset_id: string, type: string}> */
     public array $media = [];
 
@@ -34,10 +32,9 @@ class EventForm extends Component
             $event = app(EventService::class)->find($event->id);
             $this->eventId = $event->id;
             $this->title = $event->title;
-            $this->description = $event->description;
+            $this->description = (string) $event->description;
             $this->occurred_at = $event->occurred_at->format('Y-m-d');
             $this->location = (string) $event->location;
-            $this->cover_immich_asset_id = (string) $event->cover_immich_asset_id;
             $this->media = $event->media
                 ->map(fn ($m) => [
                     'immich_asset_id' => $m->immich_asset_id,
@@ -73,38 +70,23 @@ class EventForm extends Component
             'type' => $this->newAssetType,
         ];
 
-        if ($this->cover_immich_asset_id === '') {
-            $this->cover_immich_asset_id = $assetId;
-        }
-
         $this->newAssetId = '';
         $this->resetErrorBag('newAssetId');
     }
 
     public function removeMedia(int $index): void
     {
-        $removed = $this->media[$index]['immich_asset_id'] ?? null;
         unset($this->media[$index]);
         $this->media = array_values($this->media);
-
-        if ($removed && $this->cover_immich_asset_id === $removed) {
-            $this->cover_immich_asset_id = $this->media[0]['immich_asset_id'] ?? '';
-        }
-    }
-
-    public function setCover(string $assetId): void
-    {
-        $this->cover_immich_asset_id = $assetId;
     }
 
     public function save(EventService $events)
     {
         $validated = $this->validate([
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
             'occurred_at' => ['required', 'date'],
             'location' => ['nullable', 'string', 'max:255'],
-            'cover_immich_asset_id' => ['nullable', 'string', 'max:64'],
             'media' => ['nullable', 'array'],
             'media.*.immich_asset_id' => ['required', 'string', 'max:64'],
             'media.*.type' => ['required', 'in:photo,video'],
@@ -112,10 +94,10 @@ class EventForm extends Component
 
         $payload = [
             'title' => $validated['title'],
-            'description' => $validated['description'],
+            'description' => $validated['description'] ?: null,
             'occurred_at' => $validated['occurred_at'],
             'location' => $validated['location'] ?: null,
-            'cover_immich_asset_id' => $validated['cover_immich_asset_id'] ?: null,
+            'cover_immich_asset_id' => null,
             'media' => $validated['media'] ?? [],
         ];
 

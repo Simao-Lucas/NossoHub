@@ -10,8 +10,6 @@ services:
     depends_on:
       php:
         condition: service_started
-      node:
-        condition: service_completed_successfully
     networks:
       - nosso_hub
     restart: unless-stopped
@@ -57,7 +55,8 @@ services:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
       timeout: 5s
-      retries: 20
+      retries: 30
+      start_period: 20s
     networks:
       - nosso_hub
     restart: unless-stopped
@@ -71,6 +70,8 @@ services:
     command: sh -c "if [ -f package-lock.json ]; then npm ci; else npm install; fi && npm run build"
     networks:
       - nosso_hub
+    profiles:
+      - assets
 
 networks:
   nosso_hub:

@@ -28,7 +28,13 @@ docker compose up -d --build
 App: [http://localhost:2807](http://localhost:2807)  
 MariaDB no host: porta `3307`
 
-Na primeira subida o container `php` roda `composer install`, gera `APP_KEY` (se vazio) e `migrate`. O container `node` compila os assets Vite.
+Na primeira subida o container `php` roda `composer install`, gera `APP_KEY` (se vazio) e `migrate`.
+
+Para compilar os assets (Vite/Tailwind):
+
+```bash
+docker compose --profile assets run --rm node
+```
 
 ## Módulos
 

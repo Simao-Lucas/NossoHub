@@ -1,0 +1,94 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/livewire/src/**/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Sora', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Fraunces', ui-serif, Georgia, serif;
+    --color-brand-purple-950: #12081f;
+    --color-brand-purple-900: #1a0f2e;
+    --color-brand-purple-800: #2a1848;
+    --color-brand-purple-700: #3d2466;
+    --color-brand-purple-600: #5b3a8c;
+    --color-brand-yellow-400: #f5d76e;
+    --color-brand-yellow-500: #e8c547;
+    --color-brand-yellow-600: #c9a227;
+    --color-surface: #161022;
+    --color-surface-elevated: #1f1730;
+    --color-ink: #f4f0fa;
+    --color-muted: #a89bb8;
+}
+
+@layer base {
+    :root {
+        --brand-purple: #2a1848;
+        --brand-purple-deep: #12081f;
+        --brand-yellow: #e8c547;
+        --brand-yellow-soft: #f5d76e;
+        color-scheme: dark;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-[var(--brand-purple-deep)] text-[var(--color-ink)] antialiased;
+        background-image:
+            radial-gradient(ellipse 80% 50% at 10% -10%, rgba(91, 58, 140, 0.45), transparent 55%),
+            radial-gradient(ellipse 60% 40% at 100% 0%, rgba(232, 197, 71, 0.08), transparent 45%),
+            linear-gradient(180deg, #12081f 0%, #161022 40%, #12081f 100%);
+        min-height: 100vh;
+    }
+
+    ::selection {
+        background: rgba(232, 197, 71, 0.35);
+        color: #fff;
+    }
+}
+
+@layer components {
+    .font-display {
+        font-family: var(--font-display);
+    }
+
+    .nh-container {
+        @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+    }
+
+    .nh-card {
+        @apply rounded-3xl border border-white/8 bg-[var(--color-surface-elevated)]/80 backdrop-blur-sm transition duration-300 ease-out;
+    }
+
+    .nh-card-hover {
+        @apply hover:-translate-y-1 hover:border-[var(--brand-yellow)]/35 hover:shadow-[0_20px_50px_-24px_rgba(232,197,71,0.45)];
+    }
+
+    .nh-btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-medium transition duration-200;
+    }
+
+    .nh-btn-primary {
+        @apply nh-btn bg-[var(--brand-yellow)] text-[var(--brand-purple-deep)] hover:bg-[var(--brand-yellow-soft)];
+    }
+
+    .nh-btn-ghost {
+        @apply nh-btn border border-white/10 bg-white/5 text-[var(--color-ink)] hover:border-[var(--brand-yellow)]/40 hover:bg-white/10;
+    }
+
+    .nh-input {
+        @apply w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-2.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-muted)] outline-none transition focus:border-[var(--brand-yellow)]/50 focus:ring-2 focus:ring-[var(--brand-yellow)]/20;
+    }
+
+    .nh-label {
+        @apply mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--color-muted)];
+    }
+
+    .nh-badge {
+        @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium;
+    }
+}

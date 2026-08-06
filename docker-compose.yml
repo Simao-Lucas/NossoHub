@@ -1,0 +1,81 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: nosso_hub_nginx
+    ports:
+      - "2807:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      php:
+        condition: service_started
+      node:
+        condition: service_completed_successfully
+    networks:
+      - nosso_hub
+    restart: unless-stopped
+
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: nosso_hub_php
+    volumes:
+      - ./:/var/www/html
+    env_file:
+      - .env
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      DB_CONNECTION: mysql
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-nosso_hub}
+      DB_USERNAME: ${DB_USERNAME:-nosso_hub}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - nosso_hub
+    restart: unless-stopped
+
+  mariadb:
+    image: mariadb:11.4
+    container_name: nosso_hub_mariadb
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-nosso_hub}
+      MYSQL_USER: ${DB_USERNAME:-nosso_hub}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - nosso_hub
+    restart: unless-stopped
+
+  node:
+    image: node:22-alpine
+    container_name: nosso_hub_node
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    command: sh -c "(npm ci || npm install) && npm run build"
+    networks:
+      - nosso_hub
+
+networks:
+  nosso_hub:
+    driver: bridge
+
+volumes:
+  mariadb_data:
+    driver: local

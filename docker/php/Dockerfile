@@ -1,44 +1,39 @@
 FROM php:8.4-fpm-bookworm
 
-LABEL maintainer="Nosso Hub"
+ENV DEBIAN_FRONTEND=noninteractive \
+    COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_HOME=/tmp/compose
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    curl \
-    unzip \
-    libzip-dev \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libxml2-dev \
-    libicu-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        pdo_mysql \
-        mbstring \
-        exif \
-        pcntl \
-        bcmath \
-        gd \
-        zip \
-        intl \
-        opcache \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
-    && apt-get clean \
+# Dependências de sistema (camada isolada — facilita ver falha de rede/apt)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git \
+        curl \
+        unzip \
+        libzip-dev \
+        libicu-dev \
+        libonig-dev \
+        libxml2-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Extensões mínimas para Laravel (sem gd/redis — build mais leve e estável)
+# -j1 evita OOM em homelabs com pouca RAM
+RUN docker-php-ext-install -j1 \
+        pdo_mysql \
+        mbstring \
+        bcmath \
+        zip \
+        intl \
+        opcache
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/compose
 
 COPY php.ini /usr/local/etc/php/conf.d/99-nosso-hub.ini
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
-RUN chmod +x /usr/local/bin/entrypoint.sh \
-    && usermod -u 1000 www-data \
-    && groupmod -g 1000 www-data
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR /var/www/html
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["php-fpm", "-F"]

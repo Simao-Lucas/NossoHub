@@ -14,27 +14,20 @@ Mídia fica no **Immich**. O Laravel guarda apenas metadados e IDs de assets.
 
 ## Homelab (Docker)
 
-Desenvolvimento/edição pode ser no Windows. A aplicação sobe no Docker do servidor.
+Guia completo: **[DEPLOY.md](DEPLOY.md)**
 
 ```bash
 cp .env.example .env
-# Ajuste APP_URL, DB_* e Immich:
-# IMMICH_BASE_URL=https://seu-immich
-# IMMICH_API_KEY=sua-chave
+# Ajuste APP_URL, DB_* e Immich (IMMICH_BASE_URL / IMMICH_API_KEY)
 
-docker compose up -d --build
+docker compose down --remove-orphans
+docker compose build --no-cache --progress=plain php
+docker compose up -d
+docker compose --profile assets run --rm node
 ```
 
 App: [http://localhost:2807](http://localhost:2807)  
 MariaDB no host: porta `3307`
-
-Na primeira subida o container `php` roda `composer install`, gera `APP_KEY` (se vazio) e `migrate`.
-
-Para compilar os assets (Vite/Tailwind):
-
-```bash
-docker compose --profile assets run --rm node
-```
 
 ## Módulos
 

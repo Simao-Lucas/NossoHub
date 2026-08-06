@@ -11,12 +11,15 @@ return new class extends Migration
         Schema::create('event_media', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
-            $table->string('immich_asset_id');
+            $table->string('path');
+            $table->string('disk')->default('public');
+            $table->string('original_name')->nullable();
+            $table->string('mime_type')->nullable();
+            $table->unsignedBigInteger('size')->nullable();
             $table->string('type'); // photo|video
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
 
-            $table->unique(['event_id', 'immich_asset_id']);
             $table->index(['event_id', 'type']);
         });
     }

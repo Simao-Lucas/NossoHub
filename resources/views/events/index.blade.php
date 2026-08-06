@@ -21,7 +21,6 @@
                         <h2 class="font-display text-xl">{{ $event->title }}</h2>
                         <p class="mt-1 text-sm text-[var(--color-muted)]">
                             {{ $event->occurred_at->translatedFormat('d/m/Y') }}
-                            @if ($event->location) · {{ $event->location }} @endif
                         </p>
                     </div>
                     <div class="flex flex-wrap gap-2">

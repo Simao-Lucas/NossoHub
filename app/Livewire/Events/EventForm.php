@@ -2,13 +2,15 @@
 
 namespace App\Livewire\Events;
 
-use App\Enums\MediaType;
 use App\Models\Event;
 use App\Services\EventService;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class EventForm extends Component
 {
+    use WithFileUploads;
+
     public ?int $eventId = null;
 
     public string $title = '';
@@ -17,14 +19,14 @@ class EventForm extends Component
 
     public string $occurred_at = '';
 
-    public string $location = '';
+    /** @var array<int, \Livewire\Features\SupportFileUploads\TemporaryUploadedFile> */
+    public array $uploads = [];
 
-    /** @var list<array{immich_asset_id: string, type: string}> */
-    public array $media = [];
+    /** @var list<array{id: int, type: string, url: string, original_name: ?string}> */
+    public array $existingMedia = [];
 
-    public string $newAssetId = '';
-
-    public string $newAssetType = 'photo';
+    /** @var list<int> */
+    public array $removedMediaIds = [];
 
     public function mount(?Event $event = null): void
     {
@@ -34,11 +36,12 @@ class EventForm extends Component
             $this->title = $event->title;
             $this->description = (string) $event->description;
             $this->occurred_at = $event->occurred_at->format('Y-m-d');
-            $this->location = (string) $event->location;
-            $this->media = $event->media
+            $this->existingMedia = $event->media
                 ->map(fn ($m) => [
-                    'immich_asset_id' => $m->immich_asset_id,
+                    'id' => $m->id,
                     'type' => $m->type->value,
+                    'url' => $m->url,
+                    'original_name' => $m->original_name,
                 ])
                 ->values()
                 ->all();
@@ -47,58 +50,40 @@ class EventForm extends Component
         }
     }
 
-    public function addMedia(): void
+    public function removeExisting(int $id): void
     {
-        $assetId = trim($this->newAssetId);
-
-        if ($assetId === '') {
-            $this->addError('newAssetId', 'Informe o ID do asset Immich.');
-
-            return;
-        }
-
-        foreach ($this->media as $item) {
-            if ($item['immich_asset_id'] === $assetId) {
-                $this->addError('newAssetId', 'Este asset já foi adicionado.');
-
-                return;
-            }
-        }
-
-        $this->media[] = [
-            'immich_asset_id' => $assetId,
-            'type' => $this->newAssetType,
-        ];
-
-        $this->newAssetId = '';
-        $this->resetErrorBag('newAssetId');
+        $this->removedMediaIds[] = $id;
+        $this->existingMedia = collect($this->existingMedia)
+            ->reject(fn (array $item) => $item['id'] === $id)
+            ->values()
+            ->all();
     }
 
-    public function removeMedia(int $index): void
+    public function removeUpload(int $index): void
     {
-        unset($this->media[$index]);
-        $this->media = array_values($this->media);
+        unset($this->uploads[$index]);
+        $this->uploads = array_values($this->uploads);
     }
 
     public function save(EventService $events)
     {
-        $validated = $this->validate([
+        $this->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'occurred_at' => ['required', 'date'],
-            'location' => ['nullable', 'string', 'max:255'],
-            'media' => ['nullable', 'array'],
-            'media.*.immich_asset_id' => ['required', 'string', 'max:64'],
-            'media.*.type' => ['required', 'in:photo,video'],
+            'uploads' => ['nullable', 'array', 'max:40'],
+            'uploads.*' => ['file', 'max:102400', 'mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm'],
+        ], [
+            'uploads.*.max' => 'Cada arquivo pode ter no máximo 100 MB.',
+            'uploads.*.mimetypes' => 'Envie apenas imagens (JPEG, PNG, WebP, GIF) ou vídeos (MP4, MOV, WebM).',
         ]);
 
         $payload = [
-            'title' => $validated['title'],
-            'description' => $validated['description'] ?: null,
-            'occurred_at' => $validated['occurred_at'],
-            'location' => $validated['location'] ?: null,
-            'cover_immich_asset_id' => null,
-            'media' => $validated['media'] ?? [],
+            'title' => $this->title,
+            'description' => $this->description !== '' ? $this->description : null,
+            'occurred_at' => $this->occurred_at,
+            'uploads' => $this->uploads,
+            'removed_media_ids' => array_values(array_unique($this->removedMediaIds)),
         ];
 
         if ($this->eventId) {
@@ -114,8 +99,6 @@ class EventForm extends Component
 
     public function render()
     {
-        return view('livewire.events.form', [
-            'mediaTypes' => MediaType::cases(),
-        ]);
+        return view('livewire.events.form');
     }
 }

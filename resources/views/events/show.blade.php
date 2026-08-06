@@ -2,88 +2,110 @@
 
 @section('title', $event->title)
 
+@section('hide_navbar', true)
+
 @section('content')
-    <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-            <p class="text-sm text-[var(--color-muted)]">
-                <time datetime="{{ $event->occurred_at->toDateString() }}">
-                    {{ $event->occurred_at->translatedFormat('d \d\e F \d\e Y') }}
-                </time>
-                @if ($event->location)
-                    · {{ $event->location }}
-                @endif
-            </p>
-            <h1 class="mt-2 font-display text-4xl font-semibold sm:text-5xl">{{ $event->title }}</h1>
+    <div
+        class="mx-auto flex min-h-[80vh] w-full max-w-5xl flex-col items-center py-6"
+        x-data="{
+            lightbox: null,
+            open(item) { this.lightbox = item },
+            close() { this.lightbox = null },
+        }"
+        @keydown.escape.window="close()"
+    >
+        <div class="animate-fade-up w-full text-center">
+            <time
+                datetime="{{ $event->occurred_at->toDateString() }}"
+                class="text-sm uppercase tracking-[0.22em] text-[var(--brand-yellow)]"
+            >
+                {{ $event->occurred_at->translatedFormat('d \d\e F \d\e Y') }}
+            </time>
+            <h1 class="font-display mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">
+                {{ $event->title }}
+            </h1>
+            @if (filled($event->description))
+                <p class="mx-auto mt-5 max-w-2xl whitespace-pre-line text-sm leading-relaxed text-[var(--color-muted)] sm:text-base">
+                    {{ $event->description }}
+                </p>
+            @endif
         </div>
-        <div class="flex flex-wrap gap-2">
-            <a href="{{ route('events.edit', $event) }}" class="nh-btn-ghost">Editar</a>
-            <a href="{{ route('home') }}" class="nh-btn-ghost">Início</a>
+
+        @if (count($photos) === 0 && count($videos) === 0)
+            <div class="animate-fade-up mt-14 w-full max-w-md" style="animation-delay: 120ms">
+                <x-empty-state
+                    title="Sem mídias ainda"
+                    description="Edite o evento para enviar fotos ou vídeos."
+                />
+            </div>
+        @endif
+
+        @if (count($photos))
+            <section class="animate-fade-up mt-14 w-full" style="animation-delay: 120ms">
+                <h2 class="mb-5 text-center font-display text-2xl">Fotos</h2>
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                    @foreach ($photos as $photo)
+                        <button
+                            type="button"
+                            class="group overflow-hidden rounded-3xl border border-white/8 bg-black/20 text-left"
+                            @click="open({ type: 'photo', url: @js($photo['url']), name: @js($photo['original_name']) })"
+                        >
+                            <img
+                                src="{{ $photo['url'] }}"
+                                alt="{{ $photo['original_name'] ?? 'Foto' }}"
+                                class="aspect-square w-full object-cover transition duration-500 group-hover:scale-105"
+                                loading="lazy"
+                            >
+                        </button>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        @if (count($videos))
+            <section class="animate-fade-up mt-14 w-full" style="animation-delay: 180ms">
+                <h2 class="mb-5 text-center font-display text-2xl">Vídeos</h2>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    @foreach ($videos as $video)
+                        <button
+                            type="button"
+                            class="group nh-card nh-card-hover overflow-hidden p-0 text-left"
+                            @click="open({ type: 'video', url: @js($video['url']), name: @js($video['original_name']) })"
+                        >
+                            <div class="relative aspect-video bg-black/40">
+                                <video src="{{ $video['url'] }}" class="h-full w-full object-cover" muted preload="metadata"></video>
+                                <span class="absolute inset-0 flex items-center justify-center">
+                                    <span class="rounded-full bg-[var(--brand-yellow)] px-4 py-2 text-sm font-medium text-[var(--brand-purple-deep)] transition group-hover:scale-105">
+                                        ▶ Assistir
+                                    </span>
+                                </span>
+                            </div>
+                        </button>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        <div class="animate-fade-up mt-12 flex flex-wrap items-center justify-center gap-3" style="animation-delay: 240ms">
             <a href="{{ route('timeline') }}" class="nh-btn-ghost">Linha do Tempo</a>
+            <a href="{{ route('events.edit', $event) }}" class="nh-btn-ghost">Editar</a>
+            <a href="{{ route('home') }}" class="nh-btn-primary">Início</a>
+        </div>
+
+        <div
+            x-show="lightbox"
+            x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+            style="display: none;"
+            @click.self="close()"
+        >
+            <button type="button" class="absolute right-4 top-4 nh-btn-ghost" @click="close()">Fechar</button>
+            <template x-if="lightbox?.type === 'photo'">
+                <img :src="lightbox.url" :alt="lightbox.name || 'Foto'" class="max-h-[90vh] max-w-full rounded-2xl object-contain">
+            </template>
+            <template x-if="lightbox?.type === 'video'">
+                <video :src="lightbox.url" class="max-h-[90vh] max-w-full rounded-2xl" controls autoplay></video>
+            </template>
         </div>
     </div>
-
-    @if (filled($event->description))
-        <section class="nh-card mb-8 p-6 sm:p-8">
-            <h2 class="font-display text-2xl">Sobre este momento</h2>
-            <p class="mt-4 whitespace-pre-line text-[var(--color-muted)] leading-relaxed">{{ $event->description }}</p>
-        </section>
-    @endif
-
-    <section class="nh-card mb-8 p-6 sm:p-8">
-        <h2 class="font-display text-2xl">Localização</h2>
-        <p class="mt-2 text-sm text-[var(--color-muted)]">
-            {{ $event->location ?: 'Local não informado' }}
-        </p>
-        <div class="mt-4 flex min-h-48 items-center justify-center rounded-3xl border border-dashed border-white/10 bg-black/20 text-sm text-[var(--color-muted)]">
-            Mapa — estrutura preparada para implementação futura
-        </div>
-    </section>
-
-    <section class="mb-8">
-        <div class="mb-4 flex items-center justify-between">
-            <h2 class="font-display text-2xl">Fotos</h2>
-            <x-badge tone="yellow">{{ count($photos) }}</x-badge>
-        </div>
-
-        @if (count($photos) === 0)
-            <x-empty-state title="Sem fotos" description="Associe IDs Immich ao editar o evento." />
-        @else
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                @foreach ($photos as $photo)
-                    <a href="{{ $photo['original_url'] }}" target="_blank" rel="noopener" class="group overflow-hidden rounded-2xl border border-white/8 bg-black/20">
-                        <img
-                            src="{{ $photo['thumbnail_url'] }}"
-                            alt="Foto do evento"
-                            class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105"
-                            loading="lazy"
-                        >
-                    </a>
-                @endforeach
-            </div>
-        @endif
-    </section>
-
-    <section>
-        <div class="mb-4 flex items-center justify-between">
-            <h2 class="font-display text-2xl">Vídeos</h2>
-            <x-badge tone="purple">{{ count($videos) }}</x-badge>
-        </div>
-
-        @if (count($videos) === 0)
-            <x-empty-state title="Sem vídeos" description="Associe IDs Immich do tipo vídeo ao editar o evento." />
-        @else
-            <div class="grid gap-4 sm:grid-cols-2">
-                @foreach ($videos as $video)
-                    <a href="{{ $video['original_url'] }}" target="_blank" rel="noopener" class="nh-card nh-card-hover overflow-hidden">
-                        <div class="relative aspect-video bg-black/40">
-                            <img src="{{ $video['thumbnail_url'] }}" alt="Vídeo" class="h-full w-full object-cover" loading="lazy">
-                            <span class="absolute inset-0 flex items-center justify-center">
-                                <span class="rounded-full bg-[var(--brand-yellow)] px-4 py-2 text-sm font-medium text-[var(--brand-purple-deep)]">▶ Assistir</span>
-                            </span>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-        @endif
-    </section>
 @endsection

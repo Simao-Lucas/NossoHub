@@ -12,49 +12,71 @@
             @error('description') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
 
-        <div>
+        <div class="sm:col-span-2 sm:max-w-xs">
             <label class="nh-label">Data</label>
             <input wire:model="occurred_at" type="date" class="nh-input">
             @error('occurred_at') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
         </div>
 
-        <div>
-            <label class="nh-label">Local (opcional)</label>
-            <input wire:model="location" type="text" class="nh-input">
-        </div>
-
         <div class="sm:col-span-2 rounded-3xl border border-white/8 bg-black/15 p-4 sm:p-5">
-            <h3 class="font-display text-lg">Mídias Immich</h3>
-            <p class="mt-1 text-sm text-[var(--color-muted)]">Cole o ID do asset — arquivos ficam só no Immich.</p>
+            <h3 class="font-display text-lg">Fotos e vídeos</h3>
+            <p class="mt-1 text-sm text-[var(--color-muted)]">
+                Envie arquivos direto pelo formulário. Eles ficam salvos no Laravel.
+            </p>
 
-            <div class="mt-4 flex flex-col gap-3 sm:flex-row">
-                <input wire:model="newAssetId" type="text" class="nh-input" placeholder="Immich asset ID">
-                <select wire:model="newAssetType" class="nh-input sm:max-w-40">
-                    @foreach ($mediaTypes as $type)
-                        <option value="{{ $type->value }}">{{ $type->label() }}</option>
-                    @endforeach
-                </select>
-                <button type="button" wire:click="addMedia" class="nh-btn-ghost shrink-0">Adicionar</button>
+            <div class="mt-4">
+                <input
+                    wire:model="uploads"
+                    type="file"
+                    multiple
+                    accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm"
+                    class="block w-full text-sm text-[var(--color-muted)] file:mr-4 file:rounded-2xl file:border-0 file:bg-[var(--brand-yellow)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--brand-purple-deep)] hover:file:bg-[var(--brand-yellow-soft)]"
+                >
+                <div wire:loading wire:target="uploads" class="mt-2 text-xs text-[var(--brand-yellow-soft)]">
+                    Enviando arquivos...
+                </div>
+                @error('uploads.*') <p class="mt-2 text-xs text-rose-300">{{ $message }}</p> @enderror
+                @error('uploads') <p class="mt-2 text-xs text-rose-300">{{ $message }}</p> @enderror
             </div>
-            @error('newAssetId') <p class="mt-2 text-xs text-rose-300">{{ $message }}</p> @enderror
 
-            @if (count($media))
+            @if (count($uploads))
                 <ul class="mt-4 space-y-2">
-                    @foreach ($media as $index => $item)
-                        <li class="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/8 bg-white/5 px-3 py-2 text-sm">
-                            <div class="min-w-0">
-                                <span class="font-medium">{{ $item['type'] === 'video' ? 'Vídeo' : 'Foto' }}</span>
-                                <span class="ml-2 break-all text-[var(--color-muted)]">{{ $item['immich_asset_id'] }}</span>
-                            </div>
-                            <button type="button" wire:click="removeMedia({{ $index }})" class="nh-btn-ghost !px-3 !py-1.5 text-xs text-rose-300">Remover</button>
+                    @foreach ($uploads as $index => $file)
+                        <li class="flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-white/5 px-3 py-2 text-sm">
+                            <span class="truncate text-[var(--color-muted)]">{{ $file->getClientOriginalName() }}</span>
+                            <button type="button" wire:click="removeUpload({{ $index }})" class="nh-btn-ghost !px-3 !py-1.5 text-xs text-rose-300">
+                                Remover
+                            </button>
                         </li>
                     @endforeach
                 </ul>
             @endif
+
+            @if (count($existingMedia))
+                <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    @foreach ($existingMedia as $item)
+                        <div class="relative overflow-hidden rounded-2xl border border-white/8 bg-black/30">
+                            @if ($item['type'] === 'video')
+                                <video src="{{ $item['url'] }}" class="aspect-square w-full object-cover" muted></video>
+                                <span class="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] uppercase text-white">Vídeo</span>
+                            @else
+                                <img src="{{ $item['url'] }}" alt="{{ $item['original_name'] }}" class="aspect-square w-full object-cover">
+                            @endif
+                            <button
+                                type="button"
+                                wire:click="removeExisting({{ $item['id'] }})"
+                                class="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-1 text-[10px] text-rose-200"
+                            >
+                                Remover
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
 
         <div class="sm:col-span-2 flex flex-wrap gap-2 pt-2">
-            <button type="submit" class="nh-btn-primary">Salvar evento</button>
+            <button type="submit" class="nh-btn-primary" wire:loading.attr="disabled">Salvar evento</button>
             <a href="{{ route('events.index') }}" class="nh-btn-ghost">Cancelar</a>
         </div>
     </form>

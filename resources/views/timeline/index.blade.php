@@ -10,9 +10,6 @@
             <h1 class="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
                 Linha do Tempo
             </h1>
-            <p class="mt-3 text-sm text-[var(--color-muted)]">
-                Nossos momentos, um após o outro
-            </p>
         </div>
 
         @if ($events->isEmpty())
@@ -52,10 +49,6 @@
                                     <h2 class="font-display mt-3 text-xl font-semibold text-[var(--color-ink)] transition group-hover:text-[var(--brand-yellow-soft)]">
                                         {{ $event->title }}
                                     </h2>
-
-                                    @if ($event->location)
-                                        <p class="mt-2 text-xs text-[var(--color-muted)]">{{ $event->location }}</p>
-                                    @endif
 
                                     @if (filled($event->description))
                                         <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-[var(--color-muted)]">

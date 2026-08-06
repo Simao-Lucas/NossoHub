@@ -13,8 +13,6 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->date('occurred_at');
-            $table->string('location')->nullable();
-            $table->string('cover_immich_asset_id')->nullable();
             $table->timestamps();
 
             $table->index('occurred_at');

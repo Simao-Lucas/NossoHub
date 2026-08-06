@@ -23,5 +23,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(PlanItem::class, PlanItemPolicy::class);
 
         Carbon::setLocale(config('app.locale', 'pt_BR'));
+
+        config([
+            'livewire.temporary_file_upload.rules' => ['required', 'file', 'max:102400'],
+            'livewire.temporary_file_upload.max_upload_time' => 10,
+        ]);
     }
 }

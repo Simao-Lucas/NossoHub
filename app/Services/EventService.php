@@ -4,16 +4,17 @@ namespace App\Services;
 
 use App\Enums\MediaType;
 use App\Models\Event;
+use App\Models\EventMedia;
 use App\Repositories\EventRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
 
 class EventService
 {
     public function __construct(
         private readonly EventRepository $events,
-        private readonly ImmichService $immich,
     ) {}
 
     public function timeline(bool $ascending = false): Collection
@@ -31,19 +32,17 @@ class EventService
      *     title: string,
      *     description?: string|null,
      *     occurred_at: string,
-     *     location?: string|null,
-     *     cover_immich_asset_id?: string|null,
-     *     media?: list<array{immich_asset_id: string, type: string}>
+     *     uploads?: list<UploadedFile>
      * }  $payload
      */
     public function create(array $payload): Event
     {
         return DB::transaction(function () use ($payload): Event {
-            $media = $payload['media'] ?? [];
-            unset($payload['media']);
+            $uploads = $payload['uploads'] ?? [];
+            unset($payload['uploads'], $payload['media']);
 
             $event = $this->events->create($payload);
-            $this->syncMedia($event, $media);
+            $this->storeUploads($event, $uploads);
 
             return $this->events->find($event->id);
         });
@@ -54,22 +53,20 @@ class EventService
      *     title: string,
      *     description?: string|null,
      *     occurred_at: string,
-     *     location?: string|null,
-     *     cover_immich_asset_id?: string|null,
-     *     media?: list<array{immich_asset_id: string, type: string}>
+     *     uploads?: list<UploadedFile>,
+     *     removed_media_ids?: list<int>
      * }  $payload
      */
     public function update(Event $event, array $payload): Event
     {
         return DB::transaction(function () use ($event, $payload): Event {
-            $media = $payload['media'] ?? null;
-            unset($payload['media']);
+            $uploads = $payload['uploads'] ?? [];
+            $removed = $payload['removed_media_ids'] ?? [];
+            unset($payload['uploads'], $payload['removed_media_ids'], $payload['media']);
 
             $this->events->update($event, $payload);
-
-            if (is_array($media)) {
-                $this->syncMedia($event, $media);
-            }
+            $this->deleteMediaByIds($event, $removed);
+            $this->storeUploads($event, $uploads);
 
             return $this->events->find($event->id);
         });
@@ -77,12 +74,19 @@ class EventService
 
     public function delete(Event $event): void
     {
-        $this->events->delete($event);
+        DB::transaction(function () use ($event): void {
+            $event = $this->events->find($event->id);
+
+            foreach ($event->media as $media) {
+                $this->deleteMediaFile($media);
+            }
+
+            Storage::disk('public')->deleteDirectory("events/{$event->id}");
+            $this->events->delete($event);
+        });
     }
 
     /**
-     * Enrich event media with Immich metadata and thumbnail URLs.
-     *
      * @return array{event: Event, photos: list<array<string, mixed>>, videos: list<array<string, mixed>>}
      */
     public function present(Event $event): array
@@ -91,14 +95,12 @@ class EventService
         $videos = [];
 
         foreach ($event->media as $media) {
-            $asset = $this->immich->getAssetById($media->immich_asset_id);
             $item = [
                 'id' => $media->id,
-                'immich_asset_id' => $media->immich_asset_id,
                 'type' => $media->type->value,
-                'thumbnail_url' => $this->immich->appThumbnailUrl($media->immich_asset_id),
-                'original_url' => $this->immich->appOriginalUrl($media->immich_asset_id),
-                'asset' => $asset,
+                'url' => $media->url,
+                'original_name' => $media->original_name,
+                'mime_type' => $media->mime_type,
             ];
 
             if ($media->type === MediaType::Video) {
@@ -116,33 +118,55 @@ class EventService
     }
 
     /**
-     * @param  list<array{immich_asset_id: string, type: string}>  $media
+     * @param  list<UploadedFile>  $uploads
      */
-    private function syncMedia(Event $event, array $media): void
+    private function storeUploads(Event $event, array $uploads): void
     {
-        $normalized = [];
+        $sort = $this->events->nextSortOrder($event);
 
-        foreach ($media as $index => $item) {
-            $assetId = trim((string) ($item['immich_asset_id'] ?? ''));
-            $type = (string) ($item['type'] ?? MediaType::Photo->value);
-
-            if ($assetId === '') {
+        foreach ($uploads as $file) {
+            if (! $file instanceof UploadedFile) {
                 continue;
             }
 
-            if (! in_array($type, [MediaType::Photo->value, MediaType::Video->value], true)) {
-                throw ValidationException::withMessages([
-                    'media' => "Tipo de mídia inválido: {$type}",
-                ]);
-            }
+            $mime = (string) $file->getMimeType();
+            $type = str_starts_with($mime, 'video/')
+                ? MediaType::Video->value
+                : MediaType::Photo->value;
 
-            $normalized[] = [
-                'immich_asset_id' => $assetId,
+            $path = $file->store("events/{$event->id}", 'public');
+
+            $this->events->addMedia($event, [
+                'path' => $path,
+                'disk' => 'public',
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $mime,
+                'size' => $file->getSize(),
                 'type' => $type,
-                'sort_order' => $index,
-            ];
+                'sort_order' => $sort++,
+            ]);
+        }
+    }
+
+    /**
+     * @param  list<int>  $ids
+     */
+    private function deleteMediaByIds(Event $event, array $ids): void
+    {
+        if ($ids === []) {
+            return;
         }
 
-        $this->events->syncMedia($event, $normalized);
+        foreach ($this->events->mediaByIds($event, $ids) as $media) {
+            $this->deleteMediaFile($media);
+            $media->delete();
+        }
+    }
+
+    private function deleteMediaFile(EventMedia $media): void
+    {
+        if ($media->path !== '') {
+            Storage::disk($media->disk ?: 'public')->delete($media->path);
+        }
     }
 }

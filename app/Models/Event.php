@@ -15,8 +15,6 @@ class Event extends Model
         'title',
         'description',
         'occurred_at',
-        'location',
-        'cover_immich_asset_id',
     ];
 
     protected function casts(): array

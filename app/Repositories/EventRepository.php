@@ -3,8 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Event;
+use App\Models\EventMedia;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 
 class EventRepository
 {
@@ -51,21 +51,22 @@ class EventRepository
         $event->delete();
     }
 
-    /**
-     * @param  list<array{immich_asset_id: string, type: string, sort_order?: int}>  $mediaItems
-     */
-    public function syncMedia(Event $event, array $mediaItems): void
+    public function addMedia(Event $event, array $attributes): EventMedia
     {
-        DB::transaction(function () use ($event, $mediaItems): void {
-            $event->media()->delete();
+        return $event->media()->create($attributes);
+    }
 
-            foreach ($mediaItems as $index => $item) {
-                $event->media()->create([
-                    'immich_asset_id' => $item['immich_asset_id'],
-                    'type' => $item['type'],
-                    'sort_order' => $item['sort_order'] ?? $index,
-                ]);
-            }
-        });
+    /**
+     * @param  list<int>  $ids
+     * @return Collection<int, EventMedia>
+     */
+    public function mediaByIds(Event $event, array $ids): Collection
+    {
+        return $event->media()->whereIn('id', $ids)->get();
+    }
+
+    public function nextSortOrder(Event $event): int
+    {
+        return ((int) $event->media()->max('sort_order')) + 1;
     }
 }

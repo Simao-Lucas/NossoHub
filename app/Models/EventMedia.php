@@ -6,6 +6,7 @@ use App\Enums\MediaType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class EventMedia extends Model
 {
@@ -15,9 +16,17 @@ class EventMedia extends Model
 
     protected $fillable = [
         'event_id',
-        'immich_asset_id',
+        'path',
+        'disk',
+        'original_name',
+        'mime_type',
+        'size',
         'type',
         'sort_order',
+    ];
+
+    protected $appends = [
+        'url',
     ];
 
     protected function casts(): array
@@ -25,11 +34,17 @@ class EventMedia extends Model
         return [
             'type' => MediaType::class,
             'sort_order' => 'integer',
+            'size' => 'integer',
         ];
     }
 
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    public function getUrlAttribute(): string
+    {
+        return Storage::disk($this->disk ?: 'public')->url($this->path);
     }
 }

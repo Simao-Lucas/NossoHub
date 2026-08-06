@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Plan\StorePlanItemRequest;
-use App\Http\Requests\Plan\UpdatePlanItemRequest;
 use App\Models\PlanItem;
 use App\Services\PlanService;
 use Illuminate\Contracts\View\View;
@@ -20,22 +18,23 @@ class PlanController extends Controller
         return view('plans.index');
     }
 
-    public function store(StorePlanItemRequest $request): RedirectResponse
+    public function create(): View
     {
-        $this->plans->create($request->validated());
-
-        return redirect()
-            ->route('plans.index')
-            ->with('success', 'Item adicionado aos planos.');
+        return view('plans.create');
     }
 
-    public function update(UpdatePlanItemRequest $request, PlanItem $planItem): RedirectResponse
+    public function show(PlanItem $planItem): View
     {
-        $this->plans->update($planItem, $request->validated());
+        return view('plans.show', [
+            'item' => $this->plans->find($planItem->id),
+        ]);
+    }
 
-        return redirect()
-            ->route('plans.index')
-            ->with('success', 'Item atualizado.');
+    public function edit(PlanItem $planItem): View
+    {
+        return view('plans.edit', [
+            'item' => $this->plans->find($planItem->id),
+        ]);
     }
 
     public function destroy(PlanItem $planItem): RedirectResponse
@@ -44,6 +43,6 @@ class PlanController extends Controller
 
         return redirect()
             ->route('plans.index')
-            ->with('success', 'Item removido.');
+            ->with('success', 'Plano removido.');
     }
 }

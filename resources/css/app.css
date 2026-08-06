@@ -107,14 +107,34 @@
         background: rgba(0, 0, 0, 0.92);
     }
 
+    .nh-lightbox-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1;
+    }
+
+    .nh-lightbox-frame {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: min(96vw, 100%);
+        height: min(92vh, 100%);
+    }
+
     .nh-lightbox-media {
-        width: auto;
-        height: auto;
-        max-width: 96vw;
-        max-height: 92vh;
+        display: block;
+        width: 100%;
+        height: 100%;
         object-fit: contain;
+        object-position: center;
         border-radius: 1rem;
         image-orientation: from-image;
+        background: transparent;
+    }
+
+    .nh-lightbox-media[controls] {
+        background: #000;
     }
 
     .nh-timeline-scroll {

@@ -96,27 +96,27 @@
             x-show="lightbox"
             x-cloak
             class="nh-lightbox"
-            style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.92); padding: 1rem;"
+            style="display: none;"
             @click.self="close()"
         >
-            <button type="button" class="nh-btn-ghost" style="position: absolute; top: 1rem; right: 1rem; z-index: 1;" @click="close()">Fechar</button>
-            <template x-if="lightbox?.type === 'photo'">
-                <img
-                    :src="lightbox.url"
-                    :alt="lightbox.name || 'Foto'"
-                    class="nh-lightbox-media"
-                    style="width: 96vw; height: 92vh; object-fit: contain; border-radius: 1rem;"
-                >
-            </template>
-            <template x-if="lightbox?.type === 'video'">
-                <video
-                    :src="lightbox.url"
-                    class="nh-lightbox-media"
-                    style="width: 96vw; height: 92vh; object-fit: contain; border-radius: 1rem; background: #000;"
-                    controls
-                    autoplay
-                ></video>
-            </template>
+            <button type="button" class="nh-btn-ghost nh-lightbox-close" @click="close()">Fechar</button>
+            <div class="nh-lightbox-frame">
+                <template x-if="lightbox?.type === 'photo'">
+                    <img
+                        :src="lightbox.url"
+                        :alt="lightbox.name || 'Foto'"
+                        class="nh-lightbox-media"
+                    >
+                </template>
+                <template x-if="lightbox?.type === 'video'">
+                    <video
+                        :src="lightbox.url"
+                        class="nh-lightbox-media"
+                        controls
+                        autoplay
+                    ></video>
+                </template>
+            </div>
         </div>
     </div>
 @endsection

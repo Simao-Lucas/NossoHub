@@ -71,19 +71,15 @@ class GalleryIndex extends Component
             $id = (string) ($asset['id'] ?? '');
             $type = strtolower((string) ($asset['type'] ?? 'image'));
             $isVideo = str_contains($type, 'video');
-            $exif = is_array($asset['exifInfo'] ?? null) ? $asset['exifInfo'] : [];
-            [$width, $height] = $this->displayDimensions($asset, $exif);
 
             return [
                 'id' => $id,
                 'type' => $isVideo ? 'video' : 'image',
                 'originalFileName' => $asset['originalFileName'] ?? null,
-                'width' => $width,
-                'height' => $height,
-                'portrait' => $height > $width,
                 'thumbnail_url' => $id !== '' ? $immich->appThumbnailUrl($id) : null,
+                // fullsize: Immich já aplica orientação; melhor que preview/original cru
                 'preview_url' => $id !== ''
-                    ? ($isVideo ? $immich->appOriginalUrl($id) : $immich->appPreviewUrl($id))
+                    ? ($isVideo ? $immich->appOriginalUrl($id) : $immich->appThumbnailUrl($id, 'fullsize'))
                     : null,
             ];
         })->filter(fn (array $a) => $a['id'] !== '')->values();
@@ -93,25 +89,5 @@ class GalleryIndex extends Component
             'albums' => $immich->listAlbums(),
             'configured' => $immich->isConfigured(),
         ]);
-    }
-
-    /**
-     * @param  array<string, mixed>  $asset
-     * @param  array<string, mixed>  $exif
-     * @return array{0: int, 1: int}
-     */
-    private function displayDimensions(array $asset, array $exif): array
-    {
-        $width = (int) ($exif['exifImageWidth'] ?? $asset['exifImageWidth'] ?? $asset['originalWidth'] ?? 0);
-        $height = (int) ($exif['exifImageHeight'] ?? $asset['exifImageHeight'] ?? $asset['originalHeight'] ?? 0);
-        $orientationRaw = $exif['orientation'] ?? $asset['orientation'] ?? 1;
-        $orientation = (int) preg_replace('/\D+/', '', (string) $orientationRaw) ?: 1;
-
-        // EXIF 5–8: a câmera gravou em landscape, mas a foto deve ser vista em pé.
-        if (in_array($orientation, [5, 6, 7, 8], true) && $width > 0 && $height > 0) {
-            return [$height, $width];
-        }
-
-        return [$width, $height];
     }
 }

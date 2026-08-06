@@ -4,57 +4,13 @@
         open(item) {
             this.lightbox = item
             document.body.classList.add('overflow-hidden')
-            this.$nextTick(() => this.fitLightboxMedia())
         },
         close() {
             this.lightbox = null
             document.body.classList.remove('overflow-hidden')
         },
-        fitLightboxMedia() {
-            const el = document.querySelector('.nh-lightbox img, .nh-lightbox video')
-            if (!el || !this.lightbox) return
-
-            const apply = () => {
-                let w = el.naturalWidth || el.videoWidth || this.lightbox.width || 0
-                let h = el.naturalHeight || el.videoHeight || this.lightbox.height || 0
-                if (!w || !h) return
-
-                // Preview/original veio deitado, mas a foto é vertical (EXIF).
-                const needsRotate = this.lightbox.portrait && w > h
-                el.style.transform = needsRotate ? 'rotate(90deg)' : ''
-
-                const displayW = needsRotate ? h : w
-                const displayH = needsRotate ? w : h
-                const maxW = window.innerWidth * 0.96
-                const maxH = window.innerHeight * 0.92
-                const scale = Math.min(maxW / displayW, maxH / displayH)
-
-                if (needsRotate) {
-                    el.style.width = Math.round(displayH * scale) + 'px'
-                    el.style.height = Math.round(displayW * scale) + 'px'
-                } else {
-                    el.style.width = Math.round(displayW * scale) + 'px'
-                    el.style.height = Math.round(displayH * scale) + 'px'
-                }
-
-                el.style.maxWidth = 'none'
-                el.style.maxHeight = 'none'
-                el.style.objectFit = 'contain'
-                el.style.imageOrientation = 'from-image'
-            }
-
-            if (el.tagName === 'VIDEO') {
-                if (el.readyState >= 1) apply()
-                else el.addEventListener('loadedmetadata', apply, { once: true })
-            } else if (el.complete && el.naturalWidth) {
-                apply()
-            } else {
-                el.addEventListener('load', apply, { once: true })
-            }
-        },
     }"
     @keydown.escape.window="lightbox && close()"
-    @resize.window="lightbox && fitLightboxMedia()"
 >
     @unless ($configured)
         <div class="mx-auto mb-10 max-w-md">
@@ -117,9 +73,6 @@
                             type: @js($asset['type']),
                             url: @js($asset['preview_url']),
                             name: @js($asset['originalFileName'] ?? 'Mídia'),
-                            width: @js($asset['width']),
-                            height: @js($asset['height']),
-                            portrait: @js($asset['portrait']),
                         })"
                     >
                         <div class="relative aspect-square">
@@ -154,38 +107,41 @@
             x-show="lightbox"
             x-cloak
             class="nh-lightbox"
-            style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.92); padding: 1rem;"
+            style="position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.92); padding: 1rem;"
             wire:ignore
             @click.self="close()"
         >
             <button
                 type="button"
-                class="nh-btn-ghost"
+                class="nh-btn-ghost nh-lightbox-close"
                 style="position: absolute; top: 1rem; right: 1rem; z-index: 1;"
                 @click="close()"
             >
                 Fechar
             </button>
 
-            <template x-if="lightbox?.type === 'video'">
-                <video
-                    :src="lightbox.url"
-                    class="nh-lightbox-media"
-                    style="background: #000; border-radius: 1rem;"
-                    controls
-                    autoplay
-                    @loadedmetadata="fitLightboxMedia()"
-                ></video>
-            </template>
-            <template x-if="lightbox && lightbox.type !== 'video'">
-                <img
-                    :src="lightbox.url"
-                    :alt="lightbox.name || 'Foto'"
-                    class="nh-lightbox-media"
-                    style="border-radius: 1rem; image-orientation: from-image;"
-                    @load="fitLightboxMedia()"
-                >
-            </template>
+            <div
+                class="nh-lightbox-frame"
+                style="display: flex; align-items: center; justify-content: center; width: 96vw; height: 92vh; margin: auto;"
+            >
+                <template x-if="lightbox?.type === 'video'">
+                    <video
+                        :src="lightbox.url"
+                        class="nh-lightbox-media"
+                        style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 1rem; background: #000;"
+                        controls
+                        autoplay
+                    ></video>
+                </template>
+                <template x-if="lightbox && lightbox.type !== 'video'">
+                    <img
+                        :src="lightbox.url"
+                        :alt="lightbox.name || 'Foto'"
+                        class="nh-lightbox-media"
+                        style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 1rem; image-orientation: from-image;"
+                    >
+                </template>
+            </div>
         </div>
     </template>
 </div>

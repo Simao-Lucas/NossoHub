@@ -4,13 +4,57 @@
         open(item) {
             this.lightbox = item
             document.body.classList.add('overflow-hidden')
+            this.$nextTick(() => this.fitLightboxMedia())
         },
         close() {
             this.lightbox = null
             document.body.classList.remove('overflow-hidden')
         },
+        fitLightboxMedia() {
+            const el = document.querySelector('.nh-lightbox img, .nh-lightbox video')
+            if (!el || !this.lightbox) return
+
+            const apply = () => {
+                let w = el.naturalWidth || el.videoWidth || this.lightbox.width || 0
+                let h = el.naturalHeight || el.videoHeight || this.lightbox.height || 0
+                if (!w || !h) return
+
+                // Preview/original veio deitado, mas a foto é vertical (EXIF).
+                const needsRotate = this.lightbox.portrait && w > h
+                el.style.transform = needsRotate ? 'rotate(90deg)' : ''
+
+                const displayW = needsRotate ? h : w
+                const displayH = needsRotate ? w : h
+                const maxW = window.innerWidth * 0.96
+                const maxH = window.innerHeight * 0.92
+                const scale = Math.min(maxW / displayW, maxH / displayH)
+
+                if (needsRotate) {
+                    el.style.width = Math.round(displayH * scale) + 'px'
+                    el.style.height = Math.round(displayW * scale) + 'px'
+                } else {
+                    el.style.width = Math.round(displayW * scale) + 'px'
+                    el.style.height = Math.round(displayH * scale) + 'px'
+                }
+
+                el.style.maxWidth = 'none'
+                el.style.maxHeight = 'none'
+                el.style.objectFit = 'contain'
+                el.style.imageOrientation = 'from-image'
+            }
+
+            if (el.tagName === 'VIDEO') {
+                if (el.readyState >= 1) apply()
+                else el.addEventListener('loadedmetadata', apply, { once: true })
+            } else if (el.complete && el.naturalWidth) {
+                apply()
+            } else {
+                el.addEventListener('load', apply, { once: true })
+            }
+        },
     }"
     @keydown.escape.window="lightbox && close()"
+    @resize.window="lightbox && fitLightboxMedia()"
 >
     @unless ($configured)
         <div class="mx-auto mb-10 max-w-md">
@@ -73,6 +117,9 @@
                             type: @js($asset['type']),
                             url: @js($asset['preview_url']),
                             name: @js($asset['originalFileName'] ?? 'Mídia'),
+                            width: @js($asset['width']),
+                            height: @js($asset['height']),
+                            portrait: @js($asset['portrait']),
                         })"
                     >
                         <div class="relative aspect-square">
@@ -80,6 +127,7 @@
                                 src="{{ $asset['thumbnail_url'] }}"
                                 alt="{{ $asset['originalFileName'] ?? 'Mídia' }}"
                                 class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                                style="image-orientation: from-image;"
                                 loading="lazy"
                             >
                             @if ($asset['type'] === 'video')
@@ -123,9 +171,10 @@
                 <video
                     :src="lightbox.url"
                     class="nh-lightbox-media"
-                    style="width: 96vw; height: 92vh; object-fit: contain; background: #000; border-radius: 1rem;"
+                    style="background: #000; border-radius: 1rem;"
                     controls
                     autoplay
+                    @loadedmetadata="fitLightboxMedia()"
                 ></video>
             </template>
             <template x-if="lightbox && lightbox.type !== 'video'">
@@ -133,7 +182,8 @@
                     :src="lightbox.url"
                     :alt="lightbox.name || 'Foto'"
                     class="nh-lightbox-media"
-                    style="width: 96vw; height: 92vh; object-fit: contain; border-radius: 1rem;"
+                    style="border-radius: 1rem; image-orientation: from-image;"
+                    @load="fitLightboxMedia()"
                 >
             </template>
         </div>

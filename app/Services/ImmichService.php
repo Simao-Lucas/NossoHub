@@ -54,7 +54,7 @@ class ImmichService
         $payload = [
             'page' => $page,
             'size' => $size,
-            'withExif' => false,
+            'withExif' => true,
         ];
 
         if (! empty($filters['query'])) {

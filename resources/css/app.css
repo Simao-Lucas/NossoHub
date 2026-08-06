@@ -108,10 +108,13 @@
     }
 
     .nh-lightbox-media {
-        width: min(96vw, 100%);
-        height: min(92vh, 100%);
+        width: auto;
+        height: auto;
+        max-width: 96vw;
+        max-height: 92vh;
         object-fit: contain;
         border-radius: 1rem;
+        image-orientation: from-image;
     }
 
     .nh-timeline-scroll {

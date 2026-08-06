@@ -78,7 +78,7 @@ class GalleryIndex extends Component
                 'originalFileName' => $asset['originalFileName'] ?? null,
                 'thumbnail_url' => $id !== '' ? $immich->appThumbnailUrl($id) : null,
                 'preview_url' => $id !== ''
-                    ? ($isVideo ? $immich->appOriginalUrl($id) : $immich->appPreviewUrl($id))
+                    ? ($isVideo ? $immich->appOriginalUrl($id) : $immich->appThumbnailUrl($id, 'fullsize'))
                     : null,
             ];
         })->filter(fn (array $a) => $a['id'] !== '')->values();

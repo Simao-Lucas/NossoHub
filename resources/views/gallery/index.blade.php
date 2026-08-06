@@ -12,7 +12,7 @@
             </h1>
         </div>
 
-        <div class="animate-fade-up mt-10 w-full" style="animation-delay: 120ms">
+        <div class="mt-10 w-full">
             <livewire:gallery.gallery-index />
         </div>
 

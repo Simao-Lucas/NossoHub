@@ -95,16 +95,27 @@
         <div
             x-show="lightbox"
             x-cloak
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-            style="display: none;"
+            class="nh-lightbox"
+            style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.92); padding: 1rem;"
             @click.self="close()"
         >
-            <button type="button" class="absolute right-4 top-4 nh-btn-ghost" @click="close()">Fechar</button>
+            <button type="button" class="nh-btn-ghost" style="position: absolute; top: 1rem; right: 1rem; z-index: 1;" @click="close()">Fechar</button>
             <template x-if="lightbox?.type === 'photo'">
-                <img :src="lightbox.url" :alt="lightbox.name || 'Foto'" class="max-h-[90vh] max-w-full rounded-2xl object-contain">
+                <img
+                    :src="lightbox.url"
+                    :alt="lightbox.name || 'Foto'"
+                    class="nh-lightbox-media"
+                    style="width: 96vw; height: 92vh; object-fit: contain; border-radius: 1rem;"
+                >
             </template>
             <template x-if="lightbox?.type === 'video'">
-                <video :src="lightbox.url" class="max-h-[90vh] max-w-full rounded-2xl" controls autoplay></video>
+                <video
+                    :src="lightbox.url"
+                    class="nh-lightbox-media"
+                    style="width: 96vw; height: 92vh; object-fit: contain; border-radius: 1rem; background: #000;"
+                    controls
+                    autoplay
+                ></video>
             </template>
         </div>
     </div>

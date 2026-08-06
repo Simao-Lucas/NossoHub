@@ -1,10 +1,16 @@
 <div
     x-data="{
         lightbox: null,
-        open(item) { this.lightbox = item },
-        close() { this.lightbox = null },
+        open(item) {
+            this.lightbox = item
+            document.body.classList.add('overflow-hidden')
+        },
+        close() {
+            this.lightbox = null
+            document.body.classList.remove('overflow-hidden')
+        },
     }"
-    @keydown.escape.window="close()"
+    @keydown.escape.window="lightbox && close()"
 >
     @unless ($configured)
         <div class="mx-auto mb-10 max-w-md">
@@ -95,28 +101,41 @@
         @endif
     @endunless
 
-    <div
-        x-show="lightbox"
-        x-cloak
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-3 sm:p-6"
-        style="display: none;"
-        @click.self="close()"
-    >
-        <button type="button" class="absolute right-4 top-4 z-10 nh-btn-ghost" @click="close()">Fechar</button>
-        <template x-if="lightbox?.type === 'video'">
-            <video
-                :src="lightbox.url"
-                class="h-[92vh] w-[96vw] rounded-2xl object-contain"
-                controls
-                autoplay
-            ></video>
-        </template>
-        <template x-if="lightbox && lightbox.type !== 'video'">
-            <img
-                :src="lightbox.url"
-                :alt="lightbox.name || 'Foto'"
-                class="h-[92vh] w-[96vw] rounded-2xl object-contain"
+    <template x-teleport="body">
+        <div
+            x-show="lightbox"
+            x-cloak
+            class="nh-lightbox"
+            style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.92); padding: 1rem;"
+            wire:ignore
+            @click.self="close()"
+        >
+            <button
+                type="button"
+                class="nh-btn-ghost"
+                style="position: absolute; top: 1rem; right: 1rem; z-index: 1;"
+                @click="close()"
             >
-        </template>
-    </div>
+                Fechar
+            </button>
+
+            <template x-if="lightbox?.type === 'video'">
+                <video
+                    :src="lightbox.url"
+                    class="nh-lightbox-media"
+                    style="width: 96vw; height: 92vh; object-fit: contain; background: #000; border-radius: 1rem;"
+                    controls
+                    autoplay
+                ></video>
+            </template>
+            <template x-if="lightbox && lightbox.type !== 'video'">
+                <img
+                    :src="lightbox.url"
+                    :alt="lightbox.name || 'Foto'"
+                    class="nh-lightbox-media"
+                    style="width: 96vw; height: 92vh; object-fit: contain; border-radius: 1rem;"
+                >
+            </template>
+        </div>
+    </template>
 </div>

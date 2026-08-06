@@ -8,9 +8,9 @@ if [ ! -f .env ]; then
 fi
 
 if [ ! -d vendor ]; then
-    composer install --no-interaction --prefer-dist --optimize-autoloade
+    composer install --no-interaction --prefer-dist --optimize-autoloader
 else
-    composer install --no-interaction --prefer-dist --optimize-autoloade
+    composer install --no-interaction --prefer-dist --optimize-autoloader
 fi
 
 if ! grep -qE '^APP_KEY=base64:.+' .env 2>/dev/null; then

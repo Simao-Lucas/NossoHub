@@ -68,7 +68,7 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
-    command: sh -c "(npm ci || npm install) && npm run build"
+    command: sh -c "if [ -f package-lock.json ]; then npm ci; else npm install; fi && npm run build"
     networks:
       - nosso_hub
 

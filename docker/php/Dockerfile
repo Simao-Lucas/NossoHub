@@ -30,7 +30,6 @@ RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php \
     && composer --version
 
 COPY php.ini /usr/local/etc/php/conf.d/99-nosso-hub.ini
-COPY zz-docker.conf /usr/local/etc/php-fpm.d/zz-nosso-hub.conf
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh

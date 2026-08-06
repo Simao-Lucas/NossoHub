@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventMediaController;
 use App\Http\Controllers\GalleryController;
@@ -15,6 +16,16 @@ Route::get('/linha-do-tempo', TimelineController::class)->name('timeline');
 Route::get('/galeria', GalleryController::class)->name('gallery');
 
 Route::get('/midia/{media}', [EventMediaController::class, 'show'])->name('media.show');
+
+Route::prefix('calendario')->name('calendar.')->group(function (): void {
+    Route::get('/', [CalendarController::class, 'index'])->name('index');
+    Route::get('/criar', [CalendarController::class, 'create'])->name('create');
+    Route::get('/emails', [CalendarController::class, 'emails'])->name('emails');
+    Route::get('/{appointment}/ics', [CalendarController::class, 'ics'])->name('ics');
+    Route::get('/{appointment}/editar', [CalendarController::class, 'edit'])->name('edit');
+    Route::get('/{appointment}', [CalendarController::class, 'show'])->name('show');
+    Route::delete('/{appointment}', [CalendarController::class, 'destroy'])->name('destroy');
+});
 
 Route::prefix('eventos')->name('events.')->group(function (): void {
     Route::get('/', [EventController::class, 'index'])->name('index');

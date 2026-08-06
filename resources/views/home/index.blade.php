@@ -38,7 +38,7 @@
                 ['route' => 'timeline', 'label' => 'Linha do Tempo', 'image' => 'images/home/nav-timeline.png'],
                 ['route' => 'gallery', 'label' => 'Nossa Galeria', 'image' => 'images/home/nav-gallery.png'],
                 ['route' => 'plans.index', 'label' => 'Nossos Planos', 'image' => 'images/home/nav-plans.png'],
-                ['route' => 'events.index', 'label' => 'Eventos', 'image' => 'images/home/nav-events.png'],
+                ['route' => 'calendar.index', 'label' => 'Nosso Calendário', 'image' => 'images/home/nav-events.png'],
             ] as $item)
                 <a
                     href="{{ route($item['route']) }}"

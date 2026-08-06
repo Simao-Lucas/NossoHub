@@ -4,7 +4,7 @@
         ['route' => 'timeline', 'label' => 'Linha do Tempo'],
         ['route' => 'gallery', 'label' => 'Nossa Galeria'],
         ['route' => 'plans.index', 'label' => 'Nossos planos'],
-        ['route' => 'events.index', 'label' => 'Eventos'],
+        ['route' => 'calendar.index', 'label' => 'Nosso Calendário'],
     ];
 @endphp
 

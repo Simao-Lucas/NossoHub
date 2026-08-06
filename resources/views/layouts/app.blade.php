@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', config('app.name', 'Nosso Hub'))</title>
+    <title>@yield('title', 'Início')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=fraunces:500,600,700|sora:400,500,600,700" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -36,10 +36,6 @@
 
         @yield('content')
     </main>
-
-    <footer class="nh-container pb-10 pt-4 text-center text-xs text-[var(--color-muted)]">
-        Nosso Hub — momentos que importam
-    </footer>
 
     @livewireScripts
     @stack('scripts')

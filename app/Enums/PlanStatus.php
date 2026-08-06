@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum WishlistStatus: string
+enum PlanStatus: string
 {
     case Pending = 'pending';
     case InProgress = 'in_progress';

@@ -2,17 +2,17 @@
 
 namespace App\Policies;
 
+use App\Models\PlanItem;
 use App\Models\User;
-use App\Models\WishlistItem;
 
-class WishlistItemPolicy
+class PlanItemPolicy
 {
     public function viewAny(?User $user): bool
     {
         return true;
     }
 
-    public function view(?User $user, WishlistItem $wishlistItem): bool
+    public function view(?User $user, PlanItem $planItem): bool
     {
         return true;
     }
@@ -22,12 +22,12 @@ class WishlistItemPolicy
         return true;
     }
 
-    public function update(?User $user, WishlistItem $wishlistItem): bool
+    public function update(?User $user, PlanItem $planItem): bool
     {
         return true;
     }
 
-    public function delete(?User $user, WishlistItem $wishlistItem): bool
+    public function delete(?User $user, PlanItem $planItem): bool
     {
         return true;
     }

@@ -79,7 +79,7 @@
     @endif
 
     @if ($items->isEmpty())
-        <x-empty-state title="Wishlist vazia" description="Adicionem a primeira ideia juntos." />
+        <x-empty-state title="Nenhum plano ainda" description="Adicionem a primeira ideia juntos." />
     @else
         <div class="grid gap-4">
             @foreach ($items as $item)
@@ -89,7 +89,7 @@
                             <div class="mb-2 flex flex-wrap gap-2">
                                 <x-badge tone="yellow">{{ $item->category->label() }}</x-badge>
                                 <x-badge tone="purple">{{ $item->priority->label() }}</x-badge>
-                                <x-badge :tone="$item->status === \App\Enums\WishlistStatus::Completed ? 'success' : ($item->status === \App\Enums\WishlistStatus::InProgress ? 'warning' : 'muted')">
+                                <x-badge :tone="$item->status === \App\Enums\PlanStatus::Completed ? 'success' : ($item->status === \App\Enums\PlanStatus::InProgress ? 'warning' : 'muted')">
                                     {{ $item->status->label() }}
                                 </x-badge>
                             </div>

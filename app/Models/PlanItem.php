@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Enums\WishlistCategory;
-use App\Enums\WishlistPriority;
-use App\Enums\WishlistStatus;
+use App\Enums\PlanCategory;
+use App\Enums\PlanPriority;
+use App\Enums\PlanStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class WishlistItem extends Model
+class PlanItem extends Model
 {
     use HasFactory;
 
@@ -25,9 +25,9 @@ class WishlistItem extends Model
     protected function casts(): array
     {
         return [
-            'category' => WishlistCategory::class,
-            'priority' => WishlistPriority::class,
-            'status' => WishlistStatus::class,
+            'category' => PlanCategory::class,
+            'priority' => PlanPriority::class,
+            'status' => PlanStatus::class,
         ];
     }
 }

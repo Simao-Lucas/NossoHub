@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Novo evento — '.config('app.name'))
+@section('title', 'Novo evento')
 
 @section('content')
     <div class="mb-8">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Nossa Galeria — '.config('app.name'))
+@section('title', 'Nossa Galeria')
 
 @section('content')
     <div class="mb-8">

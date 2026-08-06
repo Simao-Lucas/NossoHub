@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum WishlistPriority: string
+enum PlanPriority: string
 {
     case Low = 'low';
     case Medium = 'medium';

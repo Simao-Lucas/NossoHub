@@ -3,9 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Event;
-use App\Models\WishlistItem;
+use App\Models\PlanItem;
 use App\Policies\EventPolicy;
-use App\Policies\WishlistItemPolicy;
+use App\Policies\PlanItemPolicy;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Event::class, EventPolicy::class);
-        Gate::policy(WishlistItem::class, WishlistItemPolicy::class);
+        Gate::policy(PlanItem::class, PlanItemPolicy::class);
 
         Carbon::setLocale(config('app.locale', 'pt_BR'));
     }

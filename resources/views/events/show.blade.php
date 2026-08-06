@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $event->title.' — '.config('app.name'))
+@section('title', $event->title)
 
 @section('content')
     <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

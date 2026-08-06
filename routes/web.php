@@ -4,8 +4,8 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImmichProxyController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\TimelineController;
-use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -21,11 +21,11 @@ Route::prefix('eventos')->name('events.')->group(function (): void {
     Route::delete('/{event}', [EventController::class, 'destroy'])->name('destroy');
 });
 
-Route::prefix('wishlist')->name('wishlist.')->group(function (): void {
-    Route::get('/', [WishlistController::class, 'index'])->name('index');
-    Route::post('/', [WishlistController::class, 'store'])->name('store');
-    Route::put('/{wishlistItem}', [WishlistController::class, 'update'])->name('update');
-    Route::delete('/{wishlistItem}', [WishlistController::class, 'destroy'])->name('destroy');
+Route::prefix('planos')->name('plans.')->group(function (): void {
+    Route::get('/', [PlanController::class, 'index'])->name('index');
+    Route::post('/', [PlanController::class, 'store'])->name('store');
+    Route::put('/{planItem}', [PlanController::class, 'update'])->name('update');
+    Route::delete('/{planItem}', [PlanController::class, 'destroy'])->name('destroy');
 });
 
 Route::prefix('immich')->name('immich.')->group(function (): void {

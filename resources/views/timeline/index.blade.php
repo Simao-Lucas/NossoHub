@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Linha do Tempo — '.config('app.name'))
+@section('title', 'Linha do Tempo')
 
 @section('content')
     <div class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

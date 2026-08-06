@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "nosso-hub/app",
     "type": "project",
-    "description": "Nosso Hub — hub pessoal para momentos de um casal.",
+    "description": "Hub pessoal para momentos de um casal.",
     "keywords": ["laravel", "livewire", "nosso-hub"],
     "license": "MIT",
     "require": {

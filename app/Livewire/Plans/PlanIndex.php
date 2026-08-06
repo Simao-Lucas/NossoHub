@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Livewire\Wishlist;
+namespace App\Livewire\Plans;
 
-use App\Enums\WishlistCategory;
-use App\Enums\WishlistPriority;
-use App\Enums\WishlistStatus;
-use App\Services\WishlistService;
-use Livewire\Component;
+use App\Enums\PlanCategory;
+use App\Enums\PlanPriority;
+use App\Enums\PlanStatus;
+use App\Services\PlanService;
 use Livewire\Attributes\Url;
+use Livewire\Component;
 
-class WishlistIndex extends Component
+class PlanIndex extends Component
 {
     #[Url]
     public string $search = '';
@@ -53,9 +53,9 @@ class WishlistIndex extends Component
         $this->showForm = true;
     }
 
-    public function openEdit(int $id, WishlistService $wishlist): void
+    public function openEdit(int $id, PlanService $plans): void
     {
-        $item = $wishlist->find($id);
+        $item = $plans->find($id);
 
         $this->editingId = $item->id;
         $this->title = $item->title;
@@ -68,14 +68,14 @@ class WishlistIndex extends Component
         $this->showForm = true;
     }
 
-    public function save(WishlistService $wishlist): void
+    public function save(PlanService $plans): void
     {
         $validated = $this->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'formCategory' => ['required', 'in:'.implode(',', array_column(WishlistCategory::cases(), 'value'))],
-            'formPriority' => ['required', 'in:'.implode(',', array_column(WishlistPriority::cases(), 'value'))],
-            'formStatus' => ['required', 'in:'.implode(',', array_column(WishlistStatus::cases(), 'value'))],
+            'formCategory' => ['required', 'in:'.implode(',', array_column(PlanCategory::cases(), 'value'))],
+            'formPriority' => ['required', 'in:'.implode(',', array_column(PlanPriority::cases(), 'value'))],
+            'formStatus' => ['required', 'in:'.implode(',', array_column(PlanStatus::cases(), 'value'))],
             'link' => ['nullable', 'url', 'max:2048'],
             'notes' => ['nullable', 'string'],
         ]);
@@ -91,20 +91,20 @@ class WishlistIndex extends Component
         ];
 
         if ($this->editingId) {
-            $wishlist->update($wishlist->find($this->editingId), $payload);
+            $plans->update($plans->find($this->editingId), $payload);
             session()->flash('success', 'Item atualizado.');
         } else {
-            $wishlist->create($payload);
-            session()->flash('success', 'Item adicionado à wishlist.');
+            $plans->create($payload);
+            session()->flash('success', 'Item adicionado aos planos.');
         }
 
         $this->showForm = false;
         $this->resetFormFields();
     }
 
-    public function delete(int $id, WishlistService $wishlist): void
+    public function delete(int $id, PlanService $plans): void
     {
-        $wishlist->delete($wishlist->find($id));
+        $plans->delete($plans->find($id));
         session()->flash('success', 'Item removido.');
     }
 
@@ -114,18 +114,18 @@ class WishlistIndex extends Component
         $this->resetFormFields();
     }
 
-    public function render(WishlistService $wishlist)
+    public function render(PlanService $plans)
     {
-        return view('livewire.wishlist.index', [
-            'items' => $wishlist->list([
+        return view('livewire.plans.index', [
+            'items' => $plans->list([
                 'search' => $this->search ?: null,
                 'category' => $this->category ?: null,
                 'status' => $this->status ?: null,
                 'priority' => $this->priority ?: null,
             ]),
-            'categories' => WishlistCategory::options(),
-            'priorities' => WishlistPriority::options(),
-            'statuses' => WishlistStatus::options(),
+            'categories' => PlanCategory::options(),
+            'priorities' => PlanPriority::options(),
+            'statuses' => PlanStatus::options(),
         ]);
     }
 
@@ -134,9 +134,9 @@ class WishlistIndex extends Component
         $this->editingId = null;
         $this->title = '';
         $this->description = '';
-        $this->formCategory = WishlistCategory::Experience->value;
-        $this->formPriority = WishlistPriority::Medium->value;
-        $this->formStatus = WishlistStatus::Pending->value;
+        $this->formCategory = PlanCategory::Experience->value;
+        $this->formPriority = PlanPriority::Medium->value;
+        $this->formStatus = PlanStatus::Pending->value;
         $this->link = '';
         $this->notes = '';
         $this->resetValidation();

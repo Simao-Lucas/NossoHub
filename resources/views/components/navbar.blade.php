@@ -3,7 +3,7 @@
         ['route' => 'home', 'label' => 'Início'],
         ['route' => 'timeline', 'label' => 'Linha do Tempo'],
         ['route' => 'gallery', 'label' => 'Nossa Galeria'],
-        ['route' => 'wishlist.index', 'label' => 'Wishlist'],
+        ['route' => 'plans.index', 'label' => 'Nossos planos'],
         ['route' => 'events.index', 'label' => 'Eventos'],
     ];
 @endphp
@@ -13,12 +13,9 @@
     class="sticky top-0 z-40 border-b border-white/5 bg-[var(--brand-purple-deep)]/80 backdrop-blur-xl"
 >
     <div class="nh-container flex h-14 items-center justify-between gap-4">
-        <a href="{{ route('home') }}" class="group flex items-center gap-3">
+        <a href="{{ route('home') }}" class="group flex items-center gap-3" aria-label="Início">
             <span class="flex h-8 w-8 items-center justify-center rounded-2xl bg-[var(--brand-yellow)] text-base text-[var(--brand-purple-deep)] transition group-hover:scale-105">
                 ♥
-            </span>
-            <span class="font-display text-lg font-semibold tracking-tight text-[var(--color-ink)]">
-                Nosso Hub
             </span>
         </a>
 

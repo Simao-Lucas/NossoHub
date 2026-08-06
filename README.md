@@ -38,12 +38,12 @@ MariaDB no host: porta `3307`
 | `/eventos` | CRUD de eventos |
 | `/eventos/{id}` | Página do evento |
 | `/galeria` | Nossa Galeria (Immich) |
-| `/wishlist` | Wishlist compartilhada |
+| `/planos` | Nossos planos |
 
 ## Arquitetura
 
 - Controllers / Form Requests
-- Services (`EventService`, `WishlistService`, `ImmichService`)
+- Services (`EventService`, `PlanService`, `ImmichService`)
 - Repositories
 - Policies (abertas na 1ª entrega — sem auth)
 - Livewire para formulários e galeria

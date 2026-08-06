@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Models\WishlistItem;
+use App\Models\PlanItem;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
-class WishlistRepository
+class PlanRepository
 {
     /**
      * @param  array{category?: string|null, status?: string|null, priority?: string|null, search?: string|null}  $filters
@@ -19,24 +19,24 @@ class WishlistRepository
             ->get();
     }
 
-    public function find(int $id): WishlistItem
+    public function find(int $id): PlanItem
     {
-        return WishlistItem::query()->findOrFail($id);
+        return PlanItem::query()->findOrFail($id);
     }
 
-    public function create(array $data): WishlistItem
+    public function create(array $data): PlanItem
     {
-        return WishlistItem::query()->create($data);
+        return PlanItem::query()->create($data);
     }
 
-    public function update(WishlistItem $item, array $data): WishlistItem
+    public function update(PlanItem $item, array $data): PlanItem
     {
         $item->update($data);
 
         return $item->refresh();
     }
 
-    public function delete(WishlistItem $item): void
+    public function delete(PlanItem $item): void
     {
         $item->delete();
     }
@@ -46,7 +46,7 @@ class WishlistRepository
      */
     private function query(array $filters): Builder
     {
-        return WishlistItem::query()
+        return PlanItem::query()
             ->when($filters['category'] ?? null, fn (Builder $q, string $category) => $q->where('category', $category))
             ->when($filters['status'] ?? null, fn (Builder $q, string $status) => $q->where('status', $status))
             ->when($filters['priority'] ?? null, fn (Builder $q, string $priority) => $q->where('priority', $priority))

@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum WishlistCategory: string
+enum PlanCategory: string
 {
     case Restaurant = 'restaurant';
     case Travel = 'travel';

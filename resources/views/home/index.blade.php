@@ -1,22 +1,18 @@
 @extends('layouts.app')
 
-@section('title', config('app.name').' — Desde o início')
+@section('title', 'Juntos')
 
 @section('hide_navbar', true)
 
 @section('content')
     <div class="mx-auto flex min-h-[80vh] max-w-4xl flex-col items-center justify-center py-6 text-center">
-        <p class="animate-fade-up text-sm uppercase tracking-[0.28em] text-[var(--brand-yellow)]">
-            Nosso Hub
-        </p>
-
-        <h1 class="animate-fade-up font-display mt-4 text-4xl font-semibold tracking-tight sm:text-5xl" style="animation-delay: 80ms">
+        <h1 class="animate-fade-up font-display text-4xl font-semibold tracking-tight sm:text-5xl">
             Juntos há
         </h1>
 
         <div
             class="animate-fade-up mt-10 w-full"
-            style="animation-delay: 160ms"
+            style="animation-delay: 120ms"
             x-data="loveTimer('{{ $since }}')"
             x-init="start()"
         >
@@ -37,11 +33,11 @@
             </p>
         </div>
 
-        <nav class="animate-fade-up mt-14 grid w-full grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5" style="animation-delay: 280ms" aria-label="Navegação principal">
+        <nav class="animate-fade-up mt-14 grid w-full grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5" style="animation-delay: 240ms" aria-label="Navegação principal">
             @foreach ([
                 ['route' => 'timeline', 'label' => 'Linha do Tempo', 'image' => 'images/home/nav-timeline.png'],
                 ['route' => 'gallery', 'label' => 'Nossa Galeria', 'image' => 'images/home/nav-gallery.png'],
-                ['route' => 'wishlist.index', 'label' => 'Wishlist', 'image' => 'images/home/nav-wishlist.png'],
+                ['route' => 'plans.index', 'label' => 'Nossos planos', 'image' => 'images/home/nav-plans.png'],
                 ['route' => 'events.index', 'label' => 'Eventos', 'image' => 'images/home/nav-events.png'],
             ] as $item)
                 <a
@@ -71,13 +67,31 @@
         Alpine.data('loveTimer', (isoStart) => ({
             startAt: new Date(isoStart),
             units: [
-                { key: 'years', label: 'Anos', value: 0 },
-                { key: 'months', label: 'Meses', value: 0 },
-                { key: 'days', label: 'Dias', value: 0 },
-                { key: 'hours', label: 'Horas', value: 0 },
-                { key: 'minutes', label: 'Minutos', value: 0 },
+                { key: 'years', label: 'Ano', value: 0 },
+                { key: 'months', label: 'Mês', value: 0 },
+                { key: 'days', label: 'Dia', value: 0 },
+                { key: 'hours', label: 'Hora', value: 0 },
+                { key: 'minutes', label: 'Minuto', value: 0 },
             ],
             timer: null,
+            labelFor(key, value) {
+                const singular = {
+                    years: 'Ano',
+                    months: 'Mês',
+                    days: 'Dia',
+                    hours: 'Hora',
+                    minutes: 'Minuto',
+                };
+                const plural = {
+                    years: 'Anos',
+                    months: 'Meses',
+                    days: 'Dias',
+                    hours: 'Horas',
+                    minutes: 'Minutos',
+                };
+
+                return value === 0 || value === 1 ? singular[key] : plural[key];
+            },
             start() {
                 this.tick();
                 this.timer = setInterval(() => this.tick(), 1000);
@@ -87,7 +101,11 @@
                 let cursor = new Date(this.startAt);
 
                 if (now < cursor) {
-                    this.units.forEach((u) => u.value = 0);
+                    this.units = ['years', 'months', 'days', 'hours', 'minutes'].map((key) => ({
+                        key,
+                        value: 0,
+                        label: this.labelFor(key, 0),
+                    }));
                     return;
                 }
 
@@ -115,13 +133,12 @@
                 diffMs -= hours * 3600000;
                 const minutes = Math.floor(diffMs / 60000);
 
-                this.units = [
-                    { key: 'years', label: 'Anos', value: years },
-                    { key: 'months', label: 'Meses', value: months },
-                    { key: 'days', label: 'Dias', value: days },
-                    { key: 'hours', label: 'Horas', value: hours },
-                    { key: 'minutes', label: 'Minutos', value: minutes },
-                ];
+                const values = { years, months, days, hours, minutes };
+                this.units = Object.entries(values).map(([key, value]) => ({
+                    key,
+                    value,
+                    label: this.labelFor(key, value),
+                }));
             },
         }));
     });

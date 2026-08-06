@@ -195,12 +195,17 @@ class ImmichService
 
     public function appThumbnailUrl(string $assetId, string $size = 'thumbnail'): string
     {
-        return route('immich.thumbnail', ['assetId' => $assetId, 'size' => $size]);
+        return route('immich.thumbnail', ['assetId' => $assetId, 'size' => $size], absolute: false);
     }
 
     public function appOriginalUrl(string $assetId): string
     {
-        return route('immich.original', ['assetId' => $assetId]);
+        return route('immich.original', ['assetId' => $assetId], absolute: false);
+    }
+
+    public function appPreviewUrl(string $assetId): string
+    {
+        return $this->appThumbnailUrl($assetId, 'preview');
     }
 
     /**

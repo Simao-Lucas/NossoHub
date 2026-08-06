@@ -24,6 +24,10 @@
 }
 
 @layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+
     :root {
         --brand-purple: #2a1848;
         --brand-purple-deep: #12081f;

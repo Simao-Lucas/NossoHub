@@ -22,8 +22,6 @@ class GalleryIndex extends Component
 
     public int $page = 1;
 
-    public ?string $lightboxAssetId = null;
-
     public function updatedSearch(): void
     {
         $this->page = 1;
@@ -49,16 +47,6 @@ class GalleryIndex extends Component
         $this->page++;
     }
 
-    public function openLightbox(string $assetId): void
-    {
-        $this->lightboxAssetId = $assetId;
-    }
-
-    public function closeLightbox(): void
-    {
-        $this->lightboxAssetId = null;
-    }
-
     public function render(ImmichService $immich)
     {
         $filters = [
@@ -81,14 +69,17 @@ class GalleryIndex extends Component
 
         $normalized = collect($assets)->map(function (array $asset) use ($immich) {
             $id = (string) ($asset['id'] ?? '');
+            $type = strtolower((string) ($asset['type'] ?? 'image'));
+            $isVideo = str_contains($type, 'video');
 
             return [
                 'id' => $id,
-                'type' => strtolower((string) ($asset['type'] ?? 'image')),
+                'type' => $isVideo ? 'video' : 'image',
                 'originalFileName' => $asset['originalFileName'] ?? null,
-                'localDateTime' => $asset['localDateTime'] ?? $asset['fileCreatedAt'] ?? null,
                 'thumbnail_url' => $id !== '' ? $immich->appThumbnailUrl($id) : null,
-                'original_url' => $id !== '' ? $immich->appOriginalUrl($id) : null,
+                'preview_url' => $id !== ''
+                    ? ($isVideo ? $immich->appOriginalUrl($id) : $immich->appPreviewUrl($id))
+                    : null,
             ];
         })->filter(fn (array $a) => $a['id'] !== '')->values();
 
@@ -96,9 +87,6 @@ class GalleryIndex extends Component
             'assets' => $normalized,
             'albums' => $immich->listAlbums(),
             'configured' => $immich->isConfigured(),
-            'lightboxUrl' => $this->lightboxAssetId
-                ? $immich->appOriginalUrl($this->lightboxAssetId)
-                : null,
         ]);
     }
 }

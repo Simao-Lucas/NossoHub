@@ -15,7 +15,11 @@ class ImmichProxyController extends Controller
     public function thumbnail(string $assetId): Response
     {
         try {
-            $file = $this->immich->fetchThumbnail($assetId, (string) request('size', 'thumbnail'));
+            $size = (string) request('size', 'thumbnail');
+            if (! in_array($size, ['thumbnail', 'preview', 'fullsize'], true)) {
+                $size = 'thumbnail';
+            }
+            $file = $this->immich->fetchThumbnail($assetId, $size);
         } catch (Throwable) {
             abort(404);
         }

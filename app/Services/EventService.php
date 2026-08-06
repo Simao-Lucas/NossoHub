@@ -136,6 +136,10 @@ class EventService
 
             $path = $file->store("events/{$event->id}", 'public');
 
+            if (! is_string($path) || $path === '' || ! Storage::disk('public')->exists($path)) {
+                throw new \RuntimeException('Falha ao salvar o arquivo de mídia no disco.');
+            }
+
             $this->events->addMedia($event, [
                 'path' => $path,
                 'disk' => 'public',

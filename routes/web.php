@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\EventMediaController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImmichProxyController;
@@ -12,6 +13,8 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/linha-do-tempo', TimelineController::class)->name('timeline');
 
 Route::get('/galeria', GalleryController::class)->name('gallery');
+
+Route::get('/midia/{media}', [EventMediaController::class, 'show'])->name('media.show');
 
 Route::prefix('eventos')->name('events.')->group(function (): void {
     Route::get('/', [EventController::class, 'index'])->name('index');

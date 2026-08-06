@@ -10,82 +10,51 @@ use Livewire\Component;
 class CalendarMonth extends Component
 {
     #[Url]
-    public int $year;
+    public int $year = 0;
 
     #[Url]
-    public int $month;
+    public int $month = 0;
 
     public function mount(): void
     {
         // #region agent log
-        $logPath = base_path('debug-15b0e0.log');
-        $yearInit = (new \ReflectionProperty($this, 'year'))->isInitialized($this);
-        $monthInit = (new \ReflectionProperty($this, 'month'))->isInitialized($this);
-        file_put_contents($logPath, json_encode([
+        $logPath = storage_path('logs/debug-15b0e0.log');
+        $payload = [
             'sessionId' => '15b0e0',
-            'runId' => 'pre-fix',
+            'runId' => 'post-fix',
             'hypothesisId' => 'A',
             'location' => 'CalendarMonth.php:mount:entry',
-            'message' => 'mount entry before year/month access',
+            'message' => 'mount entry with defaults',
             'data' => [
-                'yearInitialized' => $yearInit,
-                'monthInitialized' => $monthInit,
+                'year' => $this->year,
+                'month' => $this->month,
                 'queryYear' => request()->query('year'),
                 'queryMonth' => request()->query('month'),
-                'hasYearQuery' => request()->has('year'),
-                'hasMonthQuery' => request()->has('month'),
             ],
             'timestamp' => (int) (microtime(true) * 1000),
-        ])."\n", FILE_APPEND);
+        ];
+        @file_put_contents($logPath, json_encode($payload)."\n", FILE_APPEND);
         // #endregion
 
         $now = now();
-        try {
-            // #region agent log
-            file_put_contents($logPath, json_encode([
-                'sessionId' => '15b0e0',
-                'runId' => 'pre-fix',
-                'hypothesisId' => 'C',
-                'location' => 'CalendarMonth.php:mount:before-read',
-                'message' => 'about to read $this->year with ?: operator',
-                'data' => ['yearInitialized' => $yearInit],
-                'timestamp' => (int) (microtime(true) * 1000),
-            ])."\n", FILE_APPEND);
-            // #endregion
-
-            $this->year = $this->year ?: $now->year;
-            $this->month = $this->month ?: $now->month;
-
-            // #region agent log
-            file_put_contents($logPath, json_encode([
-                'sessionId' => '15b0e0',
-                'runId' => 'pre-fix',
-                'hypothesisId' => 'B',
-                'location' => 'CalendarMonth.php:mount:success',
-                'message' => 'mount assigned year/month without throwing',
-                'data' => ['year' => $this->year, 'month' => $this->month],
-                'timestamp' => (int) (microtime(true) * 1000),
-            ])."\n", FILE_APPEND);
-            // #endregion
-        } catch (\Throwable $e) {
-            // #region agent log
-            file_put_contents($logPath, json_encode([
-                'sessionId' => '15b0e0',
-                'runId' => 'pre-fix',
-                'hypothesisId' => 'A',
-                'location' => 'CalendarMonth.php:mount:catch',
-                'message' => 'mount threw while reading year/month',
-                'data' => [
-                    'exception' => $e::class,
-                    'error' => $e->getMessage(),
-                    'yearInitialized' => $yearInit,
-                    'monthInitialized' => $monthInit,
-                ],
-                'timestamp' => (int) (microtime(true) * 1000),
-            ])."\n", FILE_APPEND);
-            // #endregion
-            throw $e;
+        if ($this->year < 1) {
+            $this->year = $now->year;
         }
+        if ($this->month < 1 || $this->month > 12) {
+            $this->month = $now->month;
+        }
+
+        // #region agent log
+        @file_put_contents($logPath, json_encode([
+            'sessionId' => '15b0e0',
+            'runId' => 'post-fix',
+            'hypothesisId' => 'A',
+            'location' => 'CalendarMonth.php:mount:exit',
+            'message' => 'mount completed',
+            'data' => ['year' => $this->year, 'month' => $this->month],
+            'timestamp' => (int) (microtime(true) * 1000),
+        ])."\n", FILE_APPEND);
+        // #endregion
     }
 
     public function previousMonth(): void

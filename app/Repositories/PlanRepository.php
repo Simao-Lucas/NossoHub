@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Collection;
 class PlanRepository
 {
     /**
-     * @param  array{category?: string|null, status?: string|null, priority?: string|null, search?: string|null}  $filters
+     * @param  array{category?: int|string|null, status?: string|null, priority?: string|null, search?: string|null}  $filters
      */
     public function filtered(array $filters = []): Collection
     {
         return $this->query($filters)
+            ->with('category')
             ->orderByRaw("FIELD(priority, 'high', 'medium', 'low')")
             ->orderByDesc('updated_at')
             ->get();
@@ -21,7 +22,9 @@ class PlanRepository
 
     public function find(int $id): PlanItem
     {
-        return PlanItem::query()->findOrFail($id);
+        return PlanItem::query()
+            ->with('category')
+            ->findOrFail($id);
     }
 
     public function create(array $data): PlanItem
@@ -33,7 +36,7 @@ class PlanRepository
     {
         $item->update($data);
 
-        return $item->refresh();
+        return $item->refresh()->load('category');
     }
 
     public function delete(PlanItem $item): void
@@ -42,12 +45,12 @@ class PlanRepository
     }
 
     /**
-     * @param  array{category?: string|null, status?: string|null, priority?: string|null, search?: string|null}  $filters
+     * @param  array{category?: int|string|null, status?: string|null, priority?: string|null, search?: string|null}  $filters
      */
     private function query(array $filters): Builder
     {
         return PlanItem::query()
-            ->when($filters['category'] ?? null, fn (Builder $q, string $category) => $q->where('category', $category))
+            ->when($filters['category'] ?? null, fn (Builder $q, $category) => $q->where('plan_category_id', $category))
             ->when($filters['status'] ?? null, fn (Builder $q, string $status) => $q->where('status', $status))
             ->when($filters['priority'] ?? null, fn (Builder $q, string $priority) => $q->where('priority', $priority))
             ->when($filters['search'] ?? null, function (Builder $q, string $search): void {

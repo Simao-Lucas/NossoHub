@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Plans;
 
-use App\Enums\PlanCategory;
 use App\Enums\PlanPriority;
 use App\Enums\PlanStatus;
 use App\Models\PlanItem;
+use App\Services\PlanCategoryService;
 use App\Services\PlanService;
 use Livewire\Component;
 
@@ -17,7 +17,7 @@ class PlanForm extends Component
 
     public string $description = '';
 
-    public string $category = 'experience';
+    public ?int $plan_category_id = null;
 
     public string $priority = 'medium';
 
@@ -27,20 +27,21 @@ class PlanForm extends Component
 
     public string $notes = '';
 
-    public function mount(?PlanItem $planItem = null): void
+    public function mount(?PlanItem $planItem = null, PlanCategoryService $categories): void
     {
         if ($planItem?->exists) {
             $item = app(PlanService::class)->find($planItem->id);
             $this->planId = $item->id;
             $this->title = $item->title;
             $this->description = (string) $item->description;
-            $this->category = $item->category->value;
+            $this->plan_category_id = $item->plan_category_id;
             $this->priority = $item->priority->value;
             $this->status = $item->status->value;
             $this->link = (string) $item->link;
             $this->notes = (string) $item->notes;
         } else {
-            $this->category = PlanCategory::Experience->value;
+            $first = $categories->list()->first();
+            $this->plan_category_id = $first?->id;
             $this->priority = PlanPriority::Medium->value;
             $this->status = PlanStatus::Pending->value;
         }
@@ -51,7 +52,7 @@ class PlanForm extends Component
         $validated = $this->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'category' => ['required', 'in:'.implode(',', array_column(PlanCategory::cases(), 'value'))],
+            'plan_category_id' => ['required', 'integer', 'exists:plan_categories,id'],
             'priority' => ['required', 'in:'.implode(',', array_column(PlanPriority::cases(), 'value'))],
             'status' => ['required', 'in:'.implode(',', array_column(PlanStatus::cases(), 'value'))],
             'link' => ['nullable', 'url', 'max:2048'],
@@ -61,7 +62,7 @@ class PlanForm extends Component
         $payload = [
             'title' => $validated['title'],
             'description' => $validated['description'] !== '' ? $validated['description'] : null,
-            'category' => $validated['category'],
+            'plan_category_id' => $validated['plan_category_id'],
             'priority' => $validated['priority'],
             'status' => $validated['status'],
             'link' => $validated['link'] !== '' ? $validated['link'] : null,
@@ -79,10 +80,10 @@ class PlanForm extends Component
         return redirect()->route('plans.show', $item);
     }
 
-    public function render()
+    public function render(PlanCategoryService $categories)
     {
         return view('livewire.plans.form', [
-            'categories' => PlanCategory::options(),
+            'categories' => $categories->options(),
             'priorities' => PlanPriority::options(),
             'statuses' => PlanStatus::options(),
         ]);

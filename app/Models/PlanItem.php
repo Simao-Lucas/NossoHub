@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Enums\PlanCategory;
 use App\Enums\PlanPriority;
 use App\Enums\PlanStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PlanItem extends Model
 {
@@ -15,7 +15,7 @@ class PlanItem extends Model
     protected $fillable = [
         'title',
         'description',
-        'category',
+        'plan_category_id',
         'priority',
         'status',
         'link',
@@ -25,9 +25,13 @@ class PlanItem extends Model
     protected function casts(): array
     {
         return [
-            'category' => PlanCategory::class,
             'priority' => PlanPriority::class,
             'status' => PlanStatus::class,
         ];
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(PlanCategory::class, 'plan_category_id');
     }
 }

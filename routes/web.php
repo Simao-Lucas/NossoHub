@@ -27,6 +27,7 @@ Route::prefix('eventos')->name('events.')->group(function (): void {
 Route::prefix('planos')->name('plans.')->group(function (): void {
     Route::get('/', [PlanController::class, 'index'])->name('index');
     Route::get('/criar', [PlanController::class, 'create'])->name('create');
+    Route::get('/categorias', [PlanController::class, 'categories'])->name('categories');
     Route::get('/{planItem}', [PlanController::class, 'show'])->name('show');
     Route::get('/{planItem}/editar', [PlanController::class, 'edit'])->name('edit');
     Route::delete('/{planItem}', [PlanController::class, 'destroy'])->name('destroy');

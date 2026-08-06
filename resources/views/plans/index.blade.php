@@ -12,10 +12,9 @@
             </h1>
         </div>
 
-        <div class="animate-fade-up mt-8 w-full" style="animation-delay: 80ms">
-            <div class="flex justify-center">
-                <a href="{{ route('plans.create') }}" class="nh-btn-primary">Novo plano</a>
-            </div>
+        <div class="animate-fade-up mt-8 flex flex-wrap items-center justify-center gap-3" style="animation-delay: 80ms">
+            <a href="{{ route('plans.create') }}" class="nh-btn-primary">Novo plano</a>
+            <a href="{{ route('plans.categories') }}" class="nh-btn-ghost">Gerenciar categorias</a>
         </div>
 
         <div class="animate-fade-up mt-10 w-full" style="animation-delay: 120ms">

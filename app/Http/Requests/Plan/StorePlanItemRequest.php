@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Plan;
 
-use App\Enums\PlanCategory;
 use App\Enums\PlanPriority;
 use App\Enums\PlanStatus;
 use Illuminate\Foundation\Http\FormRequest;
@@ -21,7 +20,7 @@ class StorePlanItemRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'category' => ['required', Rule::enum(PlanCategory::class)],
+            'plan_category_id' => ['required', 'integer', 'exists:plan_categories,id'],
             'priority' => ['required', Rule::enum(PlanPriority::class)],
             'status' => ['required', Rule::enum(PlanStatus::class)],
             'link' => ['nullable', 'url', 'max:2048'],

@@ -6,46 +6,67 @@
 
 @section('content')
     <div class="mx-auto flex min-h-[80vh] w-full max-w-3xl flex-col items-center py-6">
-        <div class="animate-fade-up w-full text-center">
-            <div class="mb-5 flex flex-wrap items-center justify-center gap-2">
-                <x-badge tone="yellow">{{ $item->category->label() }}</x-badge>
-                <x-badge tone="purple">{{ $item->priority->label() }}</x-badge>
-                <x-badge :tone="$item->status === \App\Enums\PlanStatus::Completed ? 'success' : ($item->status === \App\Enums\PlanStatus::InProgress ? 'warning' : 'muted')">
-                    {{ $item->status->label() }}
-                </x-badge>
-            </div>
+        <div class="animate-fade-up relative w-full text-center">
+            <p class="text-sm uppercase tracking-[0.28em] text-[var(--brand-yellow)]">
+                {{ $item->category?->name ?? 'Plano' }}
+            </p>
 
-            <h1 class="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+            <h1 class="font-display mt-5 text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
                 {{ $item->title }}
             </h1>
 
-            @if (filled($item->description))
-                <p class="mx-auto mt-5 max-w-2xl whitespace-pre-line text-sm leading-relaxed text-[var(--color-muted)] sm:text-base">
-                    {{ $item->description }}
-                </p>
-            @endif
+            <div class="mx-auto mt-6 flex max-w-md items-center justify-center gap-3 text-xs uppercase tracking-[0.18em] text-[var(--color-muted)]">
+                <span>{{ $item->priority->label() }}</span>
+                <span class="h-1 w-1 rounded-full bg-[var(--brand-yellow)]/70"></span>
+                <span
+                    @class([
+                        'text-emerald-300' => $item->status === \App\Enums\PlanStatus::Completed,
+                        'text-amber-300' => $item->status === \App\Enums\PlanStatus::InProgress,
+                    ])
+                >
+                    {{ $item->status->label() }}
+                </span>
+            </div>
 
-            @if (filled($item->notes))
-                <p class="mx-auto mt-4 max-w-2xl text-sm text-[var(--color-muted)]">
-                    <span class="text-[var(--color-ink)]">Obs:</span> {{ $item->notes }}
-                </p>
-            @endif
-
-            @if (filled($item->link))
-                <p class="mt-6">
-                    <a
-                        href="{{ $item->link }}"
-                        target="_blank"
-                        rel="noopener"
-                        class="text-sm text-[var(--brand-yellow-soft)] hover:underline"
-                    >
-                        Abrir link
-                    </a>
-                </p>
-            @endif
+            <div
+                class="mx-auto mt-10 h-px w-24 bg-gradient-to-r from-transparent via-[var(--brand-yellow)]/60 to-transparent"
+                aria-hidden="true"
+            ></div>
         </div>
 
-        <div class="animate-fade-up mt-12 flex flex-wrap items-center justify-center gap-3" style="animation-delay: 120ms">
+        @if (filled($item->description))
+            <div class="animate-fade-up mt-10 w-full" style="animation-delay: 100ms">
+                <p class="mx-auto max-w-xl whitespace-pre-line text-center text-base leading-relaxed text-[var(--color-muted)] sm:text-lg">
+                    {{ $item->description }}
+                </p>
+            </div>
+        @endif
+
+        @if (filled($item->notes))
+            <div class="animate-fade-up mt-10 w-full max-w-lg" style="animation-delay: 160ms">
+                <p class="text-center text-[10px] uppercase tracking-[0.22em] text-[var(--brand-yellow)]/80">
+                    Observações
+                </p>
+                <p class="mt-3 whitespace-pre-line text-center text-sm leading-relaxed text-[var(--color-muted)]">
+                    {{ $item->notes }}
+                </p>
+            </div>
+        @endif
+
+        @if (filled($item->link))
+            <div class="animate-fade-up mt-10" style="animation-delay: 200ms">
+                <a
+                    href="{{ $item->link }}"
+                    target="_blank"
+                    rel="noopener"
+                    class="nh-btn-primary"
+                >
+                    Abrir link
+                </a>
+            </div>
+        @endif
+
+        <div class="animate-fade-up mt-14 flex flex-wrap items-center justify-center gap-3" style="animation-delay: 260ms">
             <a href="{{ route('plans.index') }}" class="nh-btn-ghost">Planos</a>
             <a href="{{ route('plans.edit', $item) }}" class="nh-btn-ghost">Editar</a>
             <form method="POST" action="{{ route('plans.destroy', $item) }}" onsubmit="return confirm('Remover este plano?')">

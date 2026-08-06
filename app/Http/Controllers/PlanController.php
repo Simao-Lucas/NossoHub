@@ -23,6 +23,11 @@ class PlanController extends Controller
         return view('plans.create');
     }
 
+    public function categories(): View
+    {
+        return view('plans.categories');
+    }
+
     public function show(PlanItem $planItem): View
     {
         return view('plans.show', [

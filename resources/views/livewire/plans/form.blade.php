@@ -14,12 +14,19 @@
 
         <div>
             <label class="nh-label">Categoria</label>
-            <select wire:model="category" class="nh-input">
-                @foreach ($categories as $value => $label)
-                    <option value="{{ $value }}">{{ $label }}</option>
+            <select wire:model="plan_category_id" class="nh-input">
+                <option value="">Selecione</option>
+                @foreach ($categories as $id => $label)
+                    <option value="{{ $id }}">{{ $label }}</option>
                 @endforeach
             </select>
-            @error('category') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
+            @error('plan_category_id') <p class="mt-1 text-xs text-rose-300">{{ $message }}</p> @enderror
+            @if (count($categories) === 0)
+                <p class="mt-2 text-xs text-[var(--color-muted)]">
+                    Nenhuma categoria ainda.
+                    <a href="{{ route('plans.categories') }}" class="text-[var(--brand-yellow-soft)] hover:underline">Criar categorias</a>
+                </p>
+            @endif
         </div>
 
         <div>

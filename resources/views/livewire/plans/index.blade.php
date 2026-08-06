@@ -10,8 +10,8 @@
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <select wire:model.live="category" class="nh-input" aria-label="Categoria">
                 <option value="">Todas categorias</option>
-                @foreach ($categories as $value => $label)
-                    <option value="{{ $value }}">{{ $label }}</option>
+                @foreach ($categories as $id => $label)
+                    <option value="{{ $id }}">{{ $label }}</option>
                 @endforeach
             </select>
             <select wire:model.live="status" class="nh-input" aria-label="Status">
@@ -45,7 +45,7 @@
                     class="group nh-card nh-card-hover block p-5 text-left sm:p-6"
                 >
                     <div class="mb-2 flex flex-wrap gap-2">
-                        <x-badge tone="yellow">{{ $item->category->label() }}</x-badge>
+                        <x-badge tone="yellow">{{ $item->category?->name ?? 'Sem categoria' }}</x-badge>
                         <x-badge tone="purple">{{ $item->priority->label() }}</x-badge>
                         <x-badge :tone="$item->status === \App\Enums\PlanStatus::Completed ? 'success' : ($item->status === \App\Enums\PlanStatus::InProgress ? 'warning' : 'muted')">
                             {{ $item->status->label() }}

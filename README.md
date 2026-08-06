@@ -33,7 +33,8 @@ MariaDB no host: porta `3307`
 
 | Rota | Descrição |
 |------|-----------|
-| `/` | Linha do Tempo |
+| `/` | Home — timer do relacionamento + atalhos |
+| `/linha-do-tempo` | Linha do Tempo |
 | `/eventos` | CRUD de eventos |
 | `/eventos/{id}` | Página do evento |
 | `/galeria` | Nossa Galeria (Immich) |

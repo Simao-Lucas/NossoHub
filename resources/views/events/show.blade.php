@@ -17,7 +17,8 @@
         </div>
         <div class="flex flex-wrap gap-2">
             <a href="{{ route('events.edit', $event) }}" class="nh-btn-ghost">Editar</a>
-            <a href="{{ route('timeline') }}" class="nh-btn-ghost">Voltar</a>
+            <a href="{{ route('home') }}" class="nh-btn-ghost">Início</a>
+            <a href="{{ route('timeline') }}" class="nh-btn-ghost">Linha do Tempo</a>
         </div>
     </div>
 

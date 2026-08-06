@@ -1,5 +1,6 @@
 @php
     $links = [
+        ['route' => 'home', 'label' => 'Início'],
         ['route' => 'timeline', 'label' => 'Linha do Tempo'],
         ['route' => 'gallery', 'label' => 'Nossa Galeria'],
         ['route' => 'wishlist.index', 'label' => 'Wishlist'],
@@ -11,12 +12,12 @@
     x-data="{ open: false }"
     class="sticky top-0 z-40 border-b border-white/5 bg-[var(--brand-purple-deep)]/80 backdrop-blur-xl"
 >
-    <div class="nh-container flex h-16 items-center justify-between gap-4">
-        <a href="{{ route('timeline') }}" class="group flex items-center gap-3">
-            <span class="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--brand-yellow)] text-lg text-[var(--brand-purple-deep)] shadow-[0_0_24px_rgba(232,197,71,0.35)] transition group-hover:scale-105">
+    <div class="nh-container flex h-14 items-center justify-between gap-4">
+        <a href="{{ route('home') }}" class="group flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-2xl bg-[var(--brand-yellow)] text-base text-[var(--brand-purple-deep)] transition group-hover:scale-105">
                 ♥
             </span>
-            <span class="font-display text-xl font-semibold tracking-tight text-[var(--color-ink)]">
+            <span class="font-display text-lg font-semibold tracking-tight text-[var(--color-ink)]">
                 Nosso Hub
             </span>
         </a>
@@ -26,7 +27,7 @@
                 <a
                     href="{{ route($link['route']) }}"
                     @class([
-                        'rounded-2xl px-3.5 py-2 text-sm transition',
+                        'rounded-2xl px-3 py-2 text-sm transition',
                         'bg-white/10 text-[var(--brand-yellow-soft)]' => request()->routeIs($link['route']) || request()->routeIs(str_replace('.index', '.*', $link['route'])),
                         'text-[var(--color-muted)] hover:bg-white/5 hover:text-[var(--color-ink)]' => ! (request()->routeIs($link['route']) || request()->routeIs(str_replace('.index', '.*', $link['route']))),
                     ])
@@ -34,7 +35,6 @@
                     {{ $link['label'] }}
                 </a>
             @endforeach
-            <a href="{{ route('events.create') }}" class="nh-btn-primary ml-2">Novo evento</a>
         </nav>
 
         <button
@@ -59,7 +59,6 @@
                     {{ $link['label'] }}
                 </a>
             @endforeach
-            <a href="{{ route('events.create') }}" class="nh-btn-primary mt-2">Novo evento</a>
         </nav>
     </div>
 </header>

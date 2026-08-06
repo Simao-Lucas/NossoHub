@@ -11,9 +11,17 @@
     @livewireStyles
 </head>
 <body class="min-h-screen font-sans">
-    <x-navbar />
+    @hasSection('hide_navbar')
+        {{-- Home: sem navbar superior --}}
+    @else
+        <x-navbar />
+    @endif
 
-    <main class="nh-container py-8 sm:py-12">
+    <main @class([
+        'nh-container',
+        'py-8 sm:py-12' => ! View::hasSection('hide_navbar'),
+        'px-4 sm:px-6' => View::hasSection('hide_navbar'),
+    ])>
         @if (session('success'))
             <div
                 x-data="{ show: true }"

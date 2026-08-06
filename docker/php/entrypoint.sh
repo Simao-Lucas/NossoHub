@@ -13,7 +13,7 @@ dbg() {
     local data="${3:-{}}"
     local ts
     ts=$(date +%s%3N 2>/dev/null || date +%s000)
-    printf '{"sessionId":"15b0e0","runId":"post-fix","hypothesisId":"%s","location":"entrypoint.sh","message":"%s","data":%s,"timestamp":%s}\n' \
+    printf '{"sessionId":"15b0e0","runId":"502-debug","hypothesisId":"%s","location":"entrypoint.sh","message":"%s","data":%s,"timestamp":%s}\n' \
         "$hyp" "$msg" "$data" "$ts" >> "$LOG_FILE" 2>/dev/null
     echo "[entrypoint][$hyp] $msg $data"
 }
@@ -119,8 +119,13 @@ else
 fi
 
 # #region agent log
-dbg "E" "before_exec" "{\"cmd\":\"$*\",\"has_vendor_autoload\":$([ -f vendor/autoload.php ] && echo true || echo false)}"
+LISTEN_CFG=$(grep -hR "^listen" /usr/local/etc/php-fpm.d/ 2>/dev/null | tr '\n' ';' | sed 's/"/\\"/g')
+dbg "G" "fpm_listen_config" "{\"listenLines\":\"${LISTEN_CFG}\"}"
+dbg "E" "before_exec" "{\"cmd\":\"$*\",\"has_vendor_autoload\":$([ -f vendor/autoload.php ] && echo true || echo false),\"runId\":\"502-debug\"}"
 # #endregion
 
 echo "[entrypoint] Iniciando: $*"
+# #region agent log
+dbg "F" "php_fpm_starting" "{\"note\":\"if 502 persists after this log, check nginx upstream and fpm listen\"}"
+# #endregion
 exec "$@"

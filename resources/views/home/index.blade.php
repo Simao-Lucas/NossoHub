@@ -27,10 +27,6 @@
                     </div>
                 </template>
             </div>
-
-            <p class="mt-6 text-sm text-[var(--color-muted)]">
-                desde 28 de julho de 2025, às 20h30
-            </p>
         </div>
 
         <nav class="animate-fade-up mt-14 grid w-full grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5" style="animation-delay: 240ms" aria-label="Navegação principal">

@@ -12,7 +12,7 @@
             </h1>
         </div>
 
-        @if ($events->isEmpty())
+        @if ($items->isEmpty())
             <div class="animate-fade-up mt-14 w-full max-w-md" style="animation-delay: 120ms">
                 <x-empty-state
                     title="Ainda sem eventos"
@@ -29,8 +29,14 @@
                     <div class="relative flex w-max items-stretch gap-0 pb-4 pt-8">
                         <div class="pointer-events-none absolute left-0 right-0 top-[2.15rem] h-px bg-gradient-to-r from-transparent via-[var(--brand-yellow)]/50 to-transparent"></div>
 
-                        @foreach ($events as $event)
-                            <div class="relative flex w-[min(78vw,280px)] shrink-0 flex-col items-center px-3 sm:w-[300px]">
+                        @foreach ($items as $item)
+                            @php($event = $item['event'])
+                            <div
+                                class="relative flex w-[min(78vw,280px)] shrink-0 flex-col items-center px-3 sm:w-[300px]"
+                                @if ($item['spacer_px'] > 0)
+                                    style="margin-left: {{ $item['spacer_px'] }}px"
+                                @endif
+                            >
                                 <span class="relative z-10 mb-5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-[var(--brand-yellow)] bg-[var(--brand-purple-deep)]">
                                     <span class="h-1.5 w-1.5 rounded-full bg-[var(--brand-yellow)]"></span>
                                 </span>

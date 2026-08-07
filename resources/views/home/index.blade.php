@@ -16,14 +16,26 @@
             x-data="loveTimer('{{ $since }}')"
             x-init="start()"
         >
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4">
+            <div class="grid grid-cols-2 items-end gap-3 sm:grid-cols-5 sm:gap-4">
                 <template x-for="unit in units" :key="unit.key">
-                    <div class="nh-card flex flex-col items-center justify-center px-3 py-5 sm:py-6">
+                    <div
+                        class="nh-card flex flex-col items-center justify-center"
+                        :class="unit.key === 'years'
+                            ? 'px-4 py-6 sm:px-5 sm:py-7'
+                            : 'px-3 py-5 sm:py-6'"
+                    >
                         <span
-                            class="font-display text-3xl font-semibold tabular-nums text-[var(--brand-yellow-soft)] sm:text-4xl"
+                            class="font-display font-semibold tabular-nums text-[var(--brand-yellow-soft)]"
+                            :class="unit.key === 'years'
+                                ? 'text-4xl sm:text-5xl'
+                                : 'text-3xl sm:text-4xl'"
                             x-text="unit.value"
                         ></span>
-                        <span class="mt-2 text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)] sm:text-xs" x-text="unit.label"></span>
+                        <span
+                            class="mt-2 uppercase tracking-[0.18em] text-[var(--color-muted)]"
+                            :class="unit.key === 'years' ? 'text-[11px] sm:text-sm' : 'text-[10px] sm:text-xs'"
+                            x-text="unit.label"
+                        ></span>
                     </div>
                 </template>
             </div>

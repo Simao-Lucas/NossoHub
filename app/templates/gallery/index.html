@@ -10,10 +10,6 @@
 {% if not configured %}
     <div class="nh-empty">Configure IMMICH_BASE_URL e IMMICH_API_KEY no .env para ver a galeria.</div>
 {% else %}
-    <p class="nh-muted" style="margin-top:-0.5rem;margin-bottom:1rem;font-size:0.85rem">
-        Immich: <code>{{ immich_base }}</code>
-    </p>
-
     {% if error %}
         <div class="nh-flash nh-flash-error" style="white-space:pre-wrap">{{ error }}</div>
     {% endif %}

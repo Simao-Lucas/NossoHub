@@ -8,30 +8,60 @@
             <a href="/planos" class="{% if active == 'plans' %}is-active{% endif %}">Nossos planos</a>
             <a href="/calendario" class="{% if active == 'calendar' %}is-active{% endif %}">Nosso Calendário</a>
         </nav>
-        <button type="button" class="nh-btn-ghost nh-nav-toggle" id="nav-toggle" aria-label="Menu">Menu</button>
+
+        <div class="nh-settings" id="settings-menu">
+            <button type="button" class="nh-settings-btn" id="settings-toggle" aria-label="Configurações" aria-expanded="false" aria-controls="settings-panel">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M19.4 13a7.8 7.8 0 0 0 .1-2l2-1.2-2-3.4-2.3.7a7.6 7.6 0 0 0-1.7-1L15 3.5h-4l-.5 2.6a7.6 7.6 0 0 0-1.7 1L6.5 6.4l-2 3.4 2 1.2a7.8 7.8 0 0 0 0 2l-2 1.2 2 3.4 2.3-.7a7.6 7.6 0 0 0 1.7 1l.5 2.6h4l.5-2.6a7.6 7.6 0 0 0 1.7-1l2.3.7 2-3.4-2-1.2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div class="nh-settings-panel" id="settings-panel" hidden>
+                <p class="nh-settings-label">Ajustes</p>
+                <a href="/calendario/emails">E-mails do calendário</a>
+                <a href="/planos/categorias">Categorias dos planos</a>
+                <a href="/up" target="_blank" rel="noopener">Status do app</a>
+                <div class="nh-settings-mobile-nav">
+                    <p class="nh-settings-label">Ir para</p>
+                    <a href="/">Início</a>
+                    <a href="/linha-do-tempo">Linha do Tempo</a>
+                    <a href="/galeria">Nossa Galeria</a>
+                    <a href="/planos">Nossos planos</a>
+                    <a href="/calendario">Nosso Calendário</a>
+                </div>
+            </div>
+        </div>
     </div>
-    <nav class="nh-nav-mobile" id="nav-mobile" hidden>
-        <a href="/">Início</a>
-        <a href="/linha-do-tempo">Linha do Tempo</a>
-        <a href="/galeria">Nossa Galeria</a>
-        <a href="/planos">Nossos planos</a>
-        <a href="/calendario">Nosso Calendário</a>
-    </nav>
 </header>
 <script>
     (function () {
-        const toggle = document.getElementById('nav-toggle');
-        const mobile = document.getElementById('nav-mobile');
-        if (!toggle || !mobile) return;
-        toggle.addEventListener('click', () => {
-            const open = mobile.hasAttribute('hidden');
-            if (open) {
-                mobile.removeAttribute('hidden');
-                toggle.textContent = 'Fechar';
-            } else {
-                mobile.setAttribute('hidden', '');
-                toggle.textContent = 'Menu';
-            }
+        const root = document.getElementById('settings-menu');
+        const toggle = document.getElementById('settings-toggle');
+        const panel = document.getElementById('settings-panel');
+        if (!root || !toggle || !panel) return;
+
+        function close() {
+            panel.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+
+        function open() {
+            panel.hidden = false;
+            toggle.setAttribute('aria-expanded', 'true');
+        }
+
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (panel.hidden) open();
+            else close();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!root.contains(e.target)) close();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') close();
         });
     })();
 </script>

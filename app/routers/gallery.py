@@ -85,7 +85,6 @@ def gallery(
             albums=albums,
             configured=configured,
             error=error,
-            immich_base=settings.immich_base,
             q=q,
             album=album,
             taken_after=taken_after,

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <h1 class="font-display">{% if appointment %}Editar compromisso{% else %}Novo compromisso{% endif %}</h1>
+</div>
+
+{% if error %}<div class="nh-flash nh-flash-error">{{ error }}</div>{% endif %}
+
+<form class="nh-form nh-card" method="post"
+      action="{% if appointment %}/calendario/{{ appointment.id }}/editar{% else %}/calendario/criar{% endif %}">
+    <label class="nh-label" for="summary">Título</label>
+    <input class="nh-input" id="summary" name="summary" required maxlength="255"
+           value="{{ appointment.summary if appointment else '' }}">
+
+    <label class="nh-label">
+        <input type="checkbox" name="all_day" value="true"
+               {% if appointment and appointment.all_day %}checked{% endif %}
+               onchange="toggleAllDay(this.checked)">
+        Dia inteiro
+    </label>
+
+    <div class="nh-form-row">
+        <div>
+            <label class="nh-label" for="starts_at">Início</label>
+            <input class="nh-input" id="starts_at" name="starts_at" required value="{{ starts_at }}">
+        </div>
+        <div>
+            <label class="nh-label" for="ends_at">Fim</label>
+            <input class="nh-input" id="ends_at" name="ends_at" required value="{{ ends_at }}">
+        </div>
+    </div>
+
+    <label class="nh-label" for="location">Local</label>
+    <input class="nh-input" id="location" name="location"
+           value="{{ appointment.location if appointment and appointment.location else '' }}">
+
+    <label class="nh-label" for="description">Descrição</label>
+    <textarea class="nh-input" id="description" name="description" rows="4">{{ appointment.description if appointment and appointment.description else '' }}</textarea>
+
+    <div class="nh-form-row">
+        <div>
+            <label class="nh-label" for="status">Status</label>
+            <select class="nh-input" id="status" name="status">
+                {% for value, label in statuses.items() %}
+                    <option value="{{ value }}" {% if (appointment.status if appointment else 'confirmed') == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="nh-label" for="visibility">Visibilidade</label>
+            <select class="nh-input" id="visibility" name="visibility">
+                {% for value, label in visibilities.items() %}
+                    <option value="{{ value }}" {% if (appointment.visibility if appointment else 'default') == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="nh-label" for="transparency">Disponibilidade</label>
+            <select class="nh-input" id="transparency" name="transparency">
+                {% for value, label in transparencies.items() %}
+                    <option value="{{ value }}" {% if (appointment.transparency if appointment else 'opaque') == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <input type="hidden" name="timezone" value="America/Sao_Paulo">
+
+    <div class="nh-actions">
+        <a class="nh-btn-ghost" href="{% if appointment %}/calendario/{{ appointment.id }}{% else %}/calendario{% endif %}">Cancelar</a>
+        <button class="nh-btn-primary" type="submit">Salvar</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleAllDay(checked) {
+    const start = document.getElementById('starts_at');
+    const end = document.getElementById('ends_at');
+    if (!start || !end) return;
+    if (checked) {
+        start.type = 'date';
+        end.type = 'date';
+        start.value = (start.value || '').slice(0, 10);
+        end.value = (end.value || '').slice(0, 10) || start.value;
+    } else {
+        start.type = 'datetime-local';
+        end.type = 'datetime-local';
+        if (start.value.length === 10) start.value += 'T09:00';
+        if (end.value.length === 10) end.value += 'T10:00';
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const checked = document.querySelector('input[name="all_day"]')?.checked;
+    const start = document.getElementById('starts_at');
+    const end = document.getElementById('ends_at');
+    if (start && end) {
+        start.type = checked ? 'date' : 'datetime-local';
+        end.type = checked ? 'date' : 'datetime-local';
+    }
+});
+</script>
+{% endblock %}

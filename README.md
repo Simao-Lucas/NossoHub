@@ -1,29 +1,38 @@
-# Nosso Hub
+# Nosso Hub (Python / FastAPI)
 
 Hub pessoal para registrar a história de um relacionamento.
 
-Mídia fica no **Immich**. O Laravel guarda apenas metadados e IDs de assets.
+Stack: **FastAPI + Jinja2 + SQLAlchemy + MariaDB + Docker**.
 
-## Stack
+A pasta `NossoHub-main/` é o legado Laravel e **não deve ser alterada**. Este app na raiz do repositório substitui o runtime PHP.
 
-- Laravel 12 + PHP 8.4
-- Livewire 3 + Tailwind CSS + Alpine.js (via Livewire)
-- MariaDB
-- Docker Compose (nginx, php-fpm, mariadb, node)
-- Immich API (instância externa)
+## Arquitetura
 
-## Homelab (Docker)
+```text
+Router → Policy → Service → Repository → Model
+```
 
-Guia completo: **[DEPLOY.md](DEPLOY.md)**
+## Cutover (preservar o banco)
+
+O volume Docker `nosso_hub_mariadb_data` é reutilizado. **Nunca** use `docker compose down -v`.
 
 ```bash
-cp .env.example .env
-# Ajuste APP_URL, DB_* e Immich (IMMICH_BASE_URL / IMMICH_API_KEY)
+# 1) Parar o stack Laravel SEM apagar o volume
+docker compose -f NossoHub-main/docker-compose.yml down
 
-docker compose down --remove-orphans
-docker compose build --no-cache --progress=plain php
-docker compose up -d
-docker compose --profile assets run --rm node
+# 2) Copiar mídias de eventos (uma vez)
+# PowerShell:
+Copy-Item -Recurse -Force NossoHub-main\storage\app\public\events\* media\events\
+
+# 3) Ambiente
+copy .env.example .env
+# Ajuste IMMICH_BASE_URL / IMMICH_API_KEY se usar a galeria
+
+# 4) Rede Immich (homelab)
+docker network create homelab
+
+# 5) Subir o stack Python
+docker compose up -d --build
 ```
 
 App: [http://localhost:2807](http://localhost:2807)  
@@ -33,19 +42,29 @@ MariaDB no host: porta `3307`
 
 | Rota | Descrição |
 |------|-----------|
-| `/` | Home — timer do relacionamento + atalhos |
+| `/` | Home — timer do relacionamento |
 | `/linha-do-tempo` | Linha do Tempo |
-| `/eventos` | CRUD de eventos |
-| `/eventos/{id}` | Página do evento |
-| `/galeria` | Nossa Galeria (Immich) |
-| `/planos` | Nossos planos |
+| `/eventos` | CRUD de eventos + uploads locais |
+| `/galeria` | Galeria Immich |
+| `/planos` | Planos e categorias |
+| `/calendario` | Agenda, ICS e link Google Calendar |
 
-## Arquitetura
+## Desenvolvimento local (sem Docker web)
 
-- Controllers / Form Requests
-- Services (`EventService`, `PlanService`, `ImmichService`)
-- Repositories
-- Policies (abertas na 1ª entrega — sem auth)
-- Livewire para formulários e galeria
+Com MariaDB já rodando (compose só do `mariadb` ou stack completo):
 
-Toda comunicação HTTP com Immich passa só por `App\Services\ImmichService`.
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+# No .env local: DB_HOST=127.0.0.1 DB_PORT=3307 MEDIA_ROOT=./media
+uvicorn app.main:app --reload --port 2807
+```
+
+## Notas
+
+- Schema de domínio espelha o Laravel; a app **não** roda migrations destrutivas.
+- `docker/ensure_schema.sql` só roda em volume MariaDB **novo** (initdb).
+- Uploads ficam em `media/events/{id}/`.
+- Policies estão abertas (sem auth), como no legado.

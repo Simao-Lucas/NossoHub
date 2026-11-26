@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <div>
+        <h1 class="font-display">Nossa Galeria</h1>
+        <p class="nh-muted">Fotos e vídeos do Immich.</p>
+    </div>
+</div>
+
+{% if not configured %}
+    <div class="nh-empty">Configure IMMICH_BASE_URL e IMMICH_API_KEY no .env para ver a galeria.</div>
+{% else %}
+    <form class="nh-filters nh-card" method="get">
+        <input class="nh-input" name="q" placeholder="Buscar..." value="{{ q }}">
+        <select class="nh-input" name="album">
+            <option value="">Álbum</option>
+            {% for item in albums %}
+                <option value="{{ item.id }}" {% if album == item.id|string %}selected{% endif %}>{{ item.albumName or item.name }}</option>
+            {% endfor %}
+        </select>
+        <input class="nh-input" type="date" name="taken_after" value="{{ taken_after }}">
+        <input class="nh-input" type="date" name="taken_before" value="{{ taken_before }}">
+        <button class="nh-btn-primary" type="submit">Filtrar</button>
+    </form>
+
+    {% if not assets %}
+        <div class="nh-empty">Nenhuma mídia encontrada.</div>
+    {% else %}
+        <div class="nh-gallery-grid">
+            {% for asset in assets %}
+                <button type="button" class="nh-gallery-item" data-preview="{{ asset.preview }}" data-type="{{ asset.type }}">
+                    <img src="{{ asset.thumbnail }}" alt="" loading="lazy">
+                    {% if asset.type == 'video' %}<span class="nh-badge nh-gallery-badge">Vídeo</span>{% endif %}
+                </button>
+            {% endfor %}
+        </div>
+        {% if has_more %}
+            <div class="nh-actions" style="margin-top:1.5rem;justify-content:center">
+                <a class="nh-btn-ghost" href="?q={{ q }}&album={{ album }}&taken_after={{ taken_after }}&taken_before={{ taken_before }}&page={{ page + 1 }}">Carregar mais</a>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+<div class="nh-lightbox" id="lightbox" hidden>
+    <button type="button" class="nh-btn-ghost nh-lightbox-close" id="lightbox-close">Fechar</button>
+    <div class="nh-lightbox-frame">
+        <img id="lightbox-img" alt="" hidden>
+        <video id="lightbox-video" controls hidden></video>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const box = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    const video = document.getElementById('lightbox-video');
+    const closeBtn = document.getElementById('lightbox-close');
+    if (!box) return;
+
+    function close() {
+        box.hidden = true;
+        img.hidden = true;
+        video.hidden = true;
+        video.pause();
+        video.removeAttribute('src');
+        img.removeAttribute('src');
+    }
+
+    document.querySelectorAll('.nh-gallery-item').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const type = btn.dataset.type;
+            const preview = btn.dataset.preview;
+            box.hidden = false;
+            if (type === 'video') {
+                img.hidden = true;
+                video.hidden = false;
+                video.src = preview;
+                video.play();
+            } else {
+                video.hidden = true;
+                img.hidden = false;
+                img.src = preview;
+            }
+        });
+    });
+    closeBtn?.addEventListener('click', close);
+    box.addEventListener('click', (e) => { if (e.target === box) close(); });
+})();
+</script>
+{% endblock %}

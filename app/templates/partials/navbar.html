@@ -1,0 +1,37 @@
+<header class="nh-header" id="site-header">
+    <div class="nh-container nh-header-inner">
+        <a href="/" class="nh-logo" aria-label="Início"><span>♥</span></a>
+        <nav class="nh-nav-desktop">
+            <a href="/" class="{% if active == 'home' %}is-active{% endif %}">Início</a>
+            <a href="/linha-do-tempo" class="{% if active == 'timeline' %}is-active{% endif %}">Linha do Tempo</a>
+            <a href="/galeria" class="{% if active == 'gallery' %}is-active{% endif %}">Nossa Galeria</a>
+            <a href="/planos" class="{% if active == 'plans' %}is-active{% endif %}">Nossos planos</a>
+            <a href="/calendario" class="{% if active == 'calendar' %}is-active{% endif %}">Nosso Calendário</a>
+        </nav>
+        <button type="button" class="nh-btn-ghost nh-nav-toggle" id="nav-toggle" aria-label="Menu">Menu</button>
+    </div>
+    <nav class="nh-nav-mobile" id="nav-mobile" hidden>
+        <a href="/">Início</a>
+        <a href="/linha-do-tempo">Linha do Tempo</a>
+        <a href="/galeria">Nossa Galeria</a>
+        <a href="/planos">Nossos planos</a>
+        <a href="/calendario">Nosso Calendário</a>
+    </nav>
+</header>
+<script>
+    (function () {
+        const toggle = document.getElementById('nav-toggle');
+        const mobile = document.getElementById('nav-mobile');
+        if (!toggle || !mobile) return;
+        toggle.addEventListener('click', () => {
+            const open = mobile.hasAttribute('hidden');
+            if (open) {
+                mobile.removeAttribute('hidden');
+                toggle.textContent = 'Fechar';
+            } else {
+                mobile.setAttribute('hidden', '');
+                toggle.textContent = 'Menu';
+            }
+        });
+    })();
+</script>

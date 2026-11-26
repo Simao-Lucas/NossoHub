@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <div>
+        <h1 class="font-display">Categorias</h1>
+        <p class="nh-muted">Organize os planos.</p>
+    </div>
+    <a class="nh-btn-ghost" href="/planos">Voltar</a>
+</div>
+
+{% if error %}<div class="nh-flash nh-flash-error">{{ error }}</div>{% endif %}
+
+<form class="nh-form nh-card" method="post" action="/planos/categorias">
+    <label class="nh-label" for="name">Nova categoria</label>
+    <div class="nh-actions" style="align-items:stretch">
+        <input class="nh-input" id="name" name="name" required maxlength="100" placeholder="Nome">
+        <button class="nh-btn-primary" type="submit">Adicionar</button>
+    </div>
+</form>
+
+<div class="nh-list" style="margin-top:1.5rem">
+    {% for category, count in categories %}
+        <div class="nh-card nh-list-item">
+            <div>
+                <h2>{{ category.name }}</h2>
+                <p class="nh-muted">{{ count }} plano(s)</p>
+            </div>
+            <form method="post" action="/planos/categorias/{{ category.id }}/excluir"
+                  onsubmit="return confirm('Excluir esta categoria?');">
+                <button class="nh-btn-ghost" type="submit" {% if count %}disabled title="Há planos nesta categoria"{% endif %}>
+                    Excluir
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <div class="nh-empty">Nenhuma categoria.</div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <div>
+        <h1 class="font-display">{{ appointment.summary }}</h1>
+        <p class="nh-muted">
+            {% if appointment.all_day %}
+                {{ appointment.starts_at.strftime('%d/%m/%Y') }}
+                {% if appointment.ends_at.date() != appointment.starts_at.date() %}
+                    → {{ appointment.ends_at.strftime('%d/%m/%Y') }}
+                {% endif %}
+            {% else %}
+                {{ appointment.starts_at.strftime('%d/%m/%Y %H:%M') }}
+                → {{ appointment.ends_at.strftime('%d/%m/%Y %H:%M') }}
+            {% endif %}
+        </p>
+    </div>
+    <div class="nh-actions">
+        <a class="nh-btn-ghost" href="/calendario/{{ appointment.id }}/editar">Editar</a>
+        <form method="post" action="/calendario/{{ appointment.id }}/excluir" onsubmit="return confirm('Excluir?');">
+            <button class="nh-btn-ghost" type="submit">Excluir</button>
+        </form>
+    </div>
+</div>
+
+<div class="nh-card nh-prose">
+    {% if appointment.location %}<p><strong>Local:</strong> {{ appointment.location }}</p>{% endif %}
+    {% if appointment.description %}<p>{{ appointment.description }}</p>{% endif %}
+    <div class="nh-actions" style="margin-top:1rem">
+        <a class="nh-btn-primary" href="{{ google_url }}" target="_blank" rel="noopener">Google Calendar</a>
+        <a class="nh-btn-ghost" href="/calendario/{{ appointment.id }}/ics">Baixar ICS</a>
+    </div>
+</div>
+{% endblock %}

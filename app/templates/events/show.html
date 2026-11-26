@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <div>
+        <p class="nh-muted">{{ event.occurred_at.strftime('%d/%m/%Y') }}</p>
+        <h1 class="font-display">{{ event.title }}</h1>
+    </div>
+    <div class="nh-actions">
+        <a class="nh-btn-ghost" href="/eventos/{{ event.id }}/editar">Editar</a>
+        <form method="post" action="/eventos/{{ event.id }}/excluir" onsubmit="return confirm('Excluir este evento?');">
+            <button class="nh-btn-ghost" type="submit">Excluir</button>
+        </form>
+    </div>
+</div>
+
+{% if event.description %}
+    <div class="nh-card nh-prose">{{ event.description }}</div>
+{% endif %}
+
+{% if photos %}
+    <h2 class="nh-section-title">Fotos</h2>
+    <div class="nh-media-grid">
+        {% for photo in photos %}
+            <a href="{{ photo.url }}" target="_blank" rel="noopener">
+                <img src="{{ photo.url }}" alt="{{ photo.original_name or 'Foto' }}">
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if videos %}
+    <h2 class="nh-section-title">Vídeos</h2>
+    <div class="nh-media-grid nh-media-grid-video">
+        {% for video in videos %}
+            <video controls src="{{ video.url }}"></video>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="nh-home">
+    <p class="nh-eyebrow">Nosso Hub</p>
+    <h1 class="nh-home-title font-display">Juntos há</h1>
+    <div class="nh-timer" id="love-timer" data-since="{{ since }}">
+        <div><strong data-unit="years">0</strong><span>anos</span></div>
+        <div><strong data-unit="months">0</strong><span>meses</span></div>
+        <div><strong data-unit="days">0</strong><span>dias</span></div>
+        <div><strong data-unit="hours">0</strong><span>horas</span></div>
+        <div><strong data-unit="minutes">0</strong><span>min</span></div>
+    </div>
+
+    <div class="nh-home-grid">
+        <a class="nh-home-card" href="/linha-do-tempo">
+            <img src="/static/images/home/nav-timeline.png" alt="">
+            <span>Linha do Tempo</span>
+        </a>
+        <a class="nh-home-card" href="/galeria">
+            <img src="/static/images/home/nav-gallery.png" alt="">
+            <span>Nossa Galeria</span>
+        </a>
+        <a class="nh-home-card" href="/planos">
+            <img src="/static/images/home/nav-plans.png" alt="">
+            <span>Nossos planos</span>
+        </a>
+        <a class="nh-home-card" href="/calendario">
+            <img src="/static/images/home/nav-events.png" alt="">
+            <span>Nosso Calendário</span>
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function diffParts(sinceIso) {
+    const since = new Date(sinceIso);
+    const now = new Date();
+    let years = now.getFullYear() - since.getFullYear();
+    let months = now.getMonth() - since.getMonth();
+    let days = now.getDate() - since.getDate();
+    let hours = now.getHours() - since.getHours();
+    let minutes = now.getMinutes() - since.getMinutes();
+
+    if (minutes < 0) { minutes += 60; hours -= 1; }
+    if (hours < 0) { hours += 24; days -= 1; }
+    if (days < 0) {
+        const prev = new Date(now.getFullYear(), now.getMonth(), 0);
+        days += prev.getDate();
+        months -= 1;
+    }
+    if (months < 0) { months += 12; years -= 1; }
+    return { years, months, days, hours, minutes };
+}
+
+function tick() {
+    const el = document.getElementById('love-timer');
+    if (!el) return;
+    const parts = diffParts(el.dataset.since);
+    for (const [unit, value] of Object.entries(parts)) {
+        const node = el.querySelector(`[data-unit="${unit}"]`);
+        if (node) node.textContent = value;
+    }
+}
+tick();
+setInterval(tick, 1000);
+</script>
+{% endblock %}

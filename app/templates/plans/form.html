@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <h1 class="font-display">{% if plan %}Editar plano{% else %}Novo plano{% endif %}</h1>
+</div>
+
+<form class="nh-form nh-card" method="post"
+      action="{% if plan %}/planos/{{ plan.id }}/editar{% else %}/planos/criar{% endif %}">
+    <label class="nh-label" for="title">Título</label>
+    <input class="nh-input" id="title" name="title" required maxlength="255"
+           value="{{ plan.title if plan else '' }}">
+
+    <label class="nh-label" for="plan_category_id">Categoria</label>
+    <select class="nh-input" id="plan_category_id" name="plan_category_id" required>
+        {% for id, name in categories %}
+            <option value="{{ id }}" {% if plan and plan.plan_category_id == id %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+
+    <div class="nh-form-row">
+        <div>
+            <label class="nh-label" for="priority">Prioridade</label>
+            <select class="nh-input" id="priority" name="priority">
+                {% for value, label in priorities.items() %}
+                    <option value="{{ value }}" {% if (plan.priority if plan else 'medium') == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="nh-label" for="status">Status</label>
+            <select class="nh-input" id="status" name="status">
+                {% for value, label in statuses.items() %}
+                    <option value="{{ value }}" {% if (plan.status if plan else 'pending') == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <label class="nh-label" for="description">Descrição</label>
+    <textarea class="nh-input" id="description" name="description" rows="4">{{ plan.description if plan and plan.description else '' }}</textarea>
+
+    <label class="nh-label" for="link">Link</label>
+    <input class="nh-input" id="link" name="link" type="url" maxlength="2048"
+           value="{{ plan.link if plan and plan.link else '' }}">
+
+    <label class="nh-label" for="notes">Notas</label>
+    <textarea class="nh-input" id="notes" name="notes" rows="3">{{ plan.notes if plan and plan.notes else '' }}</textarea>
+
+    <div class="nh-actions">
+        <a class="nh-btn-ghost" href="{% if plan %}/planos/{{ plan.id }}{% else %}/planos{% endif %}">Cancelar</a>
+        <button class="nh-btn-primary" type="submit">Salvar</button>
+    </div>
+</form>
+{% endblock %}

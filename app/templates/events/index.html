@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <div>
+        <h1 class="font-display">Eventos</h1>
+        <p class="nh-muted">Momentos que queremos guardar.</p>
+    </div>
+    <div class="nh-actions">
+        <a class="nh-btn-ghost" href="/linha-do-tempo">Linha do Tempo</a>
+        <a class="nh-btn-primary" href="/eventos/criar">Novo evento</a>
+    </div>
+</div>
+
+{% if not events %}
+    <div class="nh-empty">Nenhum evento ainda.</div>
+{% else %}
+    <div class="nh-list">
+        {% for event in events %}
+            <a class="nh-card nh-card-hover nh-list-item" href="/eventos/{{ event.id }}">
+                <div>
+                    <h2>{{ event.title }}</h2>
+                    <p class="nh-muted">{{ event.occurred_at.strftime('%d/%m/%Y') }}</p>
+                </div>
+                <span class="nh-badge">{{ event.media|length }} mídia(s)</span>
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

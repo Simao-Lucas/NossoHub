@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <div>
+        <h1 class="font-display">E-mails do calendário</h1>
+        <p class="nh-muted">Convidados para o link do Google Calendar.</p>
+    </div>
+    <a class="nh-btn-ghost" href="/calendario">Voltar</a>
+</div>
+
+{% if error %}<div class="nh-flash nh-flash-error">{{ error }}</div>{% endif %}
+
+<form class="nh-form nh-card" method="post" action="/calendario/emails">
+    <label class="nh-label" for="email">E-mail</label>
+    <input class="nh-input" id="email" name="email" type="email" required>
+    <label class="nh-label" for="label">Rótulo</label>
+    <input class="nh-input" id="label" name="label" maxlength="100">
+    <button class="nh-btn-primary" type="submit">Adicionar</button>
+</form>
+
+<div class="nh-list" style="margin-top:1.5rem">
+    {% for row in emails %}
+        <div class="nh-card nh-list-item">
+            <div>
+                <h2>{{ row.email }}</h2>
+                <p class="nh-muted">{{ row.label or '—' }} · {% if row.is_active %}ativo{% else %}inativo{% endif %}</p>
+            </div>
+            <div class="nh-actions">
+                <form method="post" action="/calendario/emails/{{ row.id }}/toggle">
+                    <button class="nh-btn-ghost" type="submit">Alternar</button>
+                </form>
+                <form method="post" action="/calendario/emails/{{ row.id }}/excluir" onsubmit="return confirm('Remover?');">
+                    <button class="nh-btn-ghost" type="submit">Excluir</button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="nh-empty">Nenhum e-mail cadastrado.</div>
+    {% endfor %}
+</div>
+{% endblock %}

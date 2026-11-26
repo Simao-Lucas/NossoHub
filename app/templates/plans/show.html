@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <div>
+        <p class="nh-muted">{{ plan.category.name if plan.category else '' }}</p>
+        <h1 class="font-display">{{ plan.title }}</h1>
+    </div>
+    <div class="nh-actions">
+        <a class="nh-btn-ghost" href="/planos/{{ plan.id }}/editar">Editar</a>
+        <form method="post" action="/planos/{{ plan.id }}/excluir" onsubmit="return confirm('Excluir este plano?');">
+            <button class="nh-btn-ghost" type="submit">Excluir</button>
+        </form>
+    </div>
+</div>
+
+<div class="nh-card nh-prose">
+    <div class="nh-badges" style="margin-bottom:1rem">
+        <span class="nh-badge">
+            {% if plan.priority == 'high' %}Alta{% elif plan.priority == 'low' %}Baixa{% else %}Média{% endif %}
+        </span>
+        <span class="nh-badge">
+            {% if plan.status == 'completed' %}Concluído{% elif plan.status == 'in_progress' %}Em andamento{% else %}Pendente{% endif %}
+        </span>
+    </div>
+    {% if plan.description %}<p>{{ plan.description }}</p>{% endif %}
+    {% if plan.link %}<p><a href="{{ plan.link }}" target="_blank" rel="noopener">{{ plan.link }}</a></p>{% endif %}
+    {% if plan.notes %}<p class="nh-muted">{{ plan.notes }}</p>{% endif %}
+</div>
+{% endblock %}

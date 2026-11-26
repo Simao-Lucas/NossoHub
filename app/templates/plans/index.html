@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <div>
+        <h1 class="font-display">Nossos planos</h1>
+        <p class="nh-muted">O que queremos viver juntos.</p>
+    </div>
+    <div class="nh-actions">
+        <a class="nh-btn-ghost" href="/planos/categorias">Categorias</a>
+        <a class="nh-btn-primary" href="/planos/criar">Novo plano</a>
+    </div>
+</div>
+
+<form class="nh-filters nh-card" method="get">
+    <input class="nh-input" name="search" placeholder="Buscar..." value="{{ filters.search or '' }}">
+    <select class="nh-input" name="category">
+        <option value="">Categoria</option>
+        {% for id, name in categories %}
+            <option value="{{ id }}" {% if filters.category and filters.category|string == id|string %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+    <select class="nh-input" name="status">
+        <option value="">Status</option>
+        {% for value, label in statuses.items() %}
+            <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <select class="nh-input" name="priority">
+        <option value="">Prioridade</option>
+        {% for value, label in priorities.items() %}
+            <option value="{{ value }}" {% if filters.priority == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <button class="nh-btn-primary" type="submit">Filtrar</button>
+</form>
+
+{% if not plans %}
+    <div class="nh-empty">Nenhum plano encontrado.</div>
+{% else %}
+    <div class="nh-list">
+        {% for plan in plans %}
+            <a class="nh-card nh-card-hover nh-list-item" href="/planos/{{ plan.id }}">
+                <div>
+                    <h2>{{ plan.title }}</h2>
+                    <p class="nh-muted">{{ plan.category.name if plan.category else '' }}</p>
+                </div>
+                <div class="nh-badges">
+                    <span class="nh-badge">{{ priorities.get(plan.priority, plan.priority) }}</span>
+                    <span class="nh-badge">{{ statuses.get(plan.status, plan.status) }}</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

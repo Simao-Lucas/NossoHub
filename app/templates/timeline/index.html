@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <div>
+        <h1 class="font-display">Linha do Tempo</h1>
+        <p class="nh-muted">Nossa história, dia a dia.</p>
+    </div>
+    <a class="nh-btn-primary" href="/eventos/criar">Novo evento</a>
+</div>
+
+{% if not items %}
+    <div class="nh-empty">Ainda não há momentos registrados.</div>
+{% else %}
+    <div class="nh-timeline">
+        {% for item in items %}
+            {% if item.spacer_px %}
+                <div class="nh-timeline-spacer" style="height: {{ item.spacer_px }}px"></div>
+            {% endif %}
+            <a class="nh-card nh-card-hover nh-timeline-card" href="/eventos/{{ item.event.id }}">
+                <time>{{ item.event.occurred_at.strftime('%d/%m/%Y') }}</time>
+                <h2>{{ item.event.title }}</h2>
+                {% if item.event.description %}
+                    <p>{{ item.event.short_description() }}</p>
+                {% endif %}
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

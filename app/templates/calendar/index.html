@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <div>
+        <h1 class="font-display">Nosso Calendário</h1>
+        <p class="nh-muted">{{ month_label }}</p>
+    </div>
+    <div class="nh-actions">
+        <a class="nh-btn-ghost" href="/calendario/emails">E-mails</a>
+        <a class="nh-btn-primary" href="/calendario/criar">Novo</a>
+    </div>
+</div>
+
+<div class="nh-cal-nav">
+    <a class="nh-btn-ghost" href="/calendario?year={{ prev_month.year }}&month={{ prev_month.month }}">←</a>
+    <a class="nh-btn-ghost" href="/calendario">Hoje</a>
+    <a class="nh-btn-ghost" href="/calendario?year={{ next_month.year }}&month={{ next_month.month }}">→</a>
+</div>
+
+<div class="nh-cal-grid">
+    <div class="nh-cal-head">Seg</div>
+    <div class="nh-cal-head">Ter</div>
+    <div class="nh-cal-head">Qua</div>
+    <div class="nh-cal-head">Qui</div>
+    <div class="nh-cal-head">Sex</div>
+    <div class="nh-cal-head">Sáb</div>
+    <div class="nh-cal-head">Dom</div>
+    {% for week in grid %}
+        {% for day in week %}
+            <div class="nh-cal-day {% if not day.in_month %}is-out{% endif %}">
+                <div class="nh-cal-daynum">{{ day.date.day }}</div>
+                {% for appt in day.appointments[:3] %}
+                    <a class="nh-cal-event" href="/calendario/{{ appt.id }}">{{ appt.summary }}</a>
+                {% endfor %}
+                {% if day.appointments|length > 3 %}
+                    <span class="nh-muted">+{{ day.appointments|length - 3 }}</span>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
+{% endblock %}

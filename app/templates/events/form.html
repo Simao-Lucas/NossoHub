@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nh-page-head">
+    <h1 class="font-display">{% if event %}Editar evento{% else %}Novo evento{% endif %}</h1>
+</div>
+
+{% if error %}<div class="nh-flash nh-flash-error">{{ error }}</div>{% endif %}
+
+<form class="nh-form nh-card" method="post" enctype="multipart/form-data"
+      action="{% if event %}/eventos/{{ event.id }}/editar{% else %}/eventos/criar{% endif %}">
+    <label class="nh-label" for="title">Título</label>
+    <input class="nh-input" id="title" name="title" required maxlength="255"
+           value="{{ title or (event.title if event else '') }}">
+
+    <label class="nh-label" for="occurred_at">Data</label>
+    <input class="nh-input" id="occurred_at" name="occurred_at" type="date" required value="{{ occurred_at }}">
+
+    <label class="nh-label" for="description">Descrição</label>
+    <textarea class="nh-input" id="description" name="description" rows="5">{{ description or (event.description if event and event.description else '') }}</textarea>
+
+    {% if existing_media %}
+        <p class="nh-label">Mídias atuais</p>
+        <div class="nh-existing-media">
+            {% for media in existing_media %}
+                <label class="nh-existing-media-item">
+                    {% if media.type == 'photo' %}
+                        <img src="{{ media.url }}" alt="">
+                    {% else %}
+                        <span class="nh-badge">Vídeo</span>
+                    {% endif %}
+                    <span>
+                        <input type="checkbox" name="removed_media_ids" value="{{ media.id }}">
+                        Remover
+                    </span>
+                </label>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <label class="nh-label" for="uploads">Novas fotos/vídeos</label>
+    <input class="nh-input" id="uploads" name="uploads" type="file" multiple
+           accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm">
+
+    <div class="nh-actions">
+        <a class="nh-btn-ghost" href="{% if event %}/eventos/{{ event.id }}{% else %}/eventos{% endif %}">Cancelar</a>
+        <button class="nh-btn-primary" type="submit">Salvar</button>
+    </div>
+</form>
+{% endblock %}

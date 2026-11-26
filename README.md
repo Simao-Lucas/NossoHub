@@ -78,10 +78,22 @@ A URL em `IMMICH_BASE_URL` precisa ser alcançável **de dentro** do container `
 docker compose exec web python -c "import os,httpx; u=os.environ['IMMICH_BASE_URL'].rstrip('/'); print(u); r=httpx.get(u+'/api/server/about', headers={'x-api-key':os.environ['IMMICH_API_KEY']}, timeout=10); print(r.status_code, r.text[:200])"
 ```
 
-Se falhar, troque `IMMICH_BASE_URL` pelo hostname do Immich na rede Docker (ex.: `http://immich-server:2283` ou o nome do serviço no compose do Immich) e suba de novo:
+Se aparecer `Temporary failure in name resolution` para `immich.local`, o DNS do host não existe dentro do container. Ache o Immich na rede:
 
 ```bash
-docker compose up -d --build web
+docker network inspect homelab --format '{{range .Containers}}{{.Name}} {{.IPv4Address}}{{println}}{{end}}'
 ```
 
-Na página `/galeria` o app agora mostra o erro real (rede/HTTP), não só “nenhuma mídia”.
+No `.env`, use o **nome do container** Immich (geralmente algo como `immich_server` / `immich-server`):
+
+```env
+IMMICH_BASE_URL=http://immich_server:2283
+```
+
+(a porta pode ser `2283` ou `3001` — confira no compose do Immich)
+
+```bash
+docker compose up -d web
+```
+
+Na página `/galeria` o app mostra o erro real (rede/HTTP), não só “nenhuma mídia”.

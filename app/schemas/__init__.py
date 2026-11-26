@@ -1,1 +1,1 @@
-"""Pydantic schemas (optional form helpers)."""
+"""Pydantic schemas for the JSON API."""

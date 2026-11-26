@@ -12,6 +12,8 @@ A pasta `NossoHub-main/` é o legado Laravel e **não deve ser alterada**. Este 
 Router → Policy → Service → Repository → Model
 ```
 
+API JSON para o app Android (paralela ao site): prefixo `/api/...` — ver [`android/README.md`](android/README.md).
+
 ## Cutover (preservar o banco)
 
 O volume Docker `nosso_hub_mariadb_data` é reutilizado. **Nunca** use `docker compose down -v`.

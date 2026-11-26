@@ -68,3 +68,20 @@ uvicorn app.main:app --reload --port 2807
 - `docker/ensure_schema.sql` só roda em volume MariaDB **novo** (initdb).
 - Uploads ficam em `media/events/{id}/`.
 - Policies estão abertas (sem auth), como no legado.
+
+## Galeria Immich vazia
+
+A URL em `IMMICH_BASE_URL` precisa ser alcançável **de dentro** do container `nosso_hub_web` (rede `homelab`), não só no browser do host.
+
+```bash
+# No homelab: teste DNS/HTTP a partir do container
+docker compose exec web python -c "import os,httpx; u=os.environ['IMMICH_BASE_URL'].rstrip('/'); print(u); r=httpx.get(u+'/api/server/about', headers={'x-api-key':os.environ['IMMICH_API_KEY']}, timeout=10); print(r.status_code, r.text[:200])"
+```
+
+Se falhar, troque `IMMICH_BASE_URL` pelo hostname do Immich na rede Docker (ex.: `http://immich-server:2283` ou o nome do serviço no compose do Immich) e suba de novo:
+
+```bash
+docker compose up -d --build web
+```
+
+Na página `/galeria` o app agora mostra o erro real (rede/HTTP), não só “nenhuma mídia”.

@@ -40,7 +40,11 @@ class Settings(BaseSettings):
 
     @property
     def immich_base(self) -> str:
-        return self.immich_base_url.rstrip("/")
+        base = (self.immich_base_url or "").strip().rstrip("/")
+        # Evita duplicar /api no path das chamadas (/api/search/...)
+        if base.endswith("/api"):
+            base = base[:-4]
+        return base
 
 
 @lru_cache
